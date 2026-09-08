@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+# local experiments
+/.bob/
+# not published: reverse-engineering notes and bundle tools
+/private/
