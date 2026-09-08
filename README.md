@@ -45,6 +45,17 @@ versions. The version guard tells you when you are off the verified build.
 
 Bob loads skills at the next task; then type `/bob-version` or just ask.
 
+## Uninstall
+
+```sh
+rm -rf ~/.bob/skills/bob-{version,telemetry,security-model,agent-rules,override-rules}   # global
+rm -rf .bob/skills/bob-{version,telemetry,security-model,agent-rules,override-rules}     # this project
+```
+
+Files you created with `bob-override-rules` stay in place: `.bob/rules/*.md`,
+`.bob/agents/explore-premium.md`, `.bob/hooks/command-guard.mjs` and the `hooks` entry in
+`.bob/settings.json`. Remove the ones you no longer want.
+
 ## Example: subagents on the premium model
 
 Bob's `explore` subagent is wired to the economy `explorer` model, whatever you ask for.
