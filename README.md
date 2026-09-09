@@ -83,4 +83,6 @@ Then check which model was billed:
 Scripts are Python 3, standard library, read-only, offline; the hook template needs Node.js.
 Issues welcome, especially from other builds or platforms — attach `bob_version.py --json`.
 
+Changes between versions: [CHANGELOG.md](CHANGELOG.md).
+
 MIT — see [LICENSE](LICENSE).

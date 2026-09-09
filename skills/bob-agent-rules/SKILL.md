@@ -8,7 +8,10 @@ description: Use when the user asks which rules IBM Bob injects — subagents ("
 1. `python3 "<skill-dir>/scripts/dump_system_prompt.py" --list`, then `--section NAME`,
    `--guidance Subagents` (or `create_html_artifact`), `--grep REGEX`, `--task PREFIX`, `--all`.
    This is the prompt Bob really used, stored with the task.
-2. For what the prompt does not show — subagent presets and their models, tier → alias table,
+2. Skills appearing in `.bob/skills/` on their own, or coming back after deletion: read
+   `reference/command-migration.md` — Bob turns `commands/*.md` files into skills at every
+   start, and `/init` is not involved.
+3. For what the prompt does not show — subagent presets and their models, tier → alias table,
    rule precedence, custom agents — read `reference/injected-rules.md`.
-3. State that rules are instructions, not enforcement, and that `explore` subagents never see
+4. State that rules are instructions, not enforcement, and that `explore` subagents never see
    project rules. To change any of it, use the `bob-override-rules` skill.

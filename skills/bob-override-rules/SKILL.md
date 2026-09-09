@@ -17,9 +17,12 @@ metadata:
    `/init` leftovers.
 4. Write the file with `write_file`: English, imperative, one concern per file; keep the first
    paragraph that names the built-in rule being overridden.
-5. A prohibition needs enforcement, not a rule: `deniedCommands`, a `PreToolUse` hook
+5. Skills reappearing in `.bob/skills/` are not a rules problem: Bob turns every
+   `{.bob,.agents,.claude}/**/commands/*.md` file into a skill at each start. Remove the source
+   folder, or run `templates/skills/tombstone.sh <names…>` and commit the result.
+6. A prohibition needs enforcement, not a rule: `deniedCommands`, a `PreToolUse` hook
    (`templates/hooks/`, exit 2 blocks — ask before enabling, hooks bypass approval), or a mode
    without `execute`.
-6. Tell the user: loaded at the next task; verify with `dump_system_prompt.py --grep "<phrase>"`;
+7. Tell the user: loaded at the next task; verify with `dump_system_prompt.py --grep "<phrase>"`;
    rules are probabilistic; `explore` subagents ignore them; Plan and Ask modes allow only
    `explore`; in production every tier except `explorer` maps to `premium-ide`.

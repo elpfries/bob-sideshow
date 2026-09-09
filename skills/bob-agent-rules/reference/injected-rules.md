@@ -60,6 +60,25 @@ read/edit/execute), `model` (`fast|premium|ultra|explorer`), `maxTurns`, `rawPro
   `next-edit-model` (`rnj-1-test`), `feedback-model`; `experiment-*-tool-model-routing` (exposure only).
 - Observed billing: `premium-ide` 2.0 Bobcoins / M tokens (in+out, no cache discount), `explorer` 0.833.
 
+## Vocabulary collision: "task"
+
+`start_subtask` is described to the model as "This will let you **create a new task** instance
+using your provided title, message, and initial todo list", its `message` parameter as "the initial
+user message or instructions for **this new task**", its `todos` examples as
+`[ ] Task description (pending)`. A Bob conversation is itself a task (table `tasks`, "task
+breadcrumbs", `TASK_CREATED` telemetry), and `spawn_subagent` "handles a focused **task**".
+
+So "create a task" matches a built-in tool almost literally, while a tracker instruction
+(Backlog.md, Jira…) is only prose inside `<project_rules>` — and tool definitions weigh more in
+context than rules (`toolDefinitions` ≈ 6.5k tokens vs `projectRules` ≈ 1.7k in a typical task).
+Two other places repeat the phrase: the `create-plan` skill ("Using the `start_subtask` tool,
+create a new task for each subtask in the plan-file") and the `update_todo_list` prompt ("When
+blocked, create a new task describing what needs to be resolved").
+
+No routing logic is involved: the model disambiguates badly and the native tool wins. Fixes: say
+"backlog task", add `bob-override-rules` → `templates/rules/task-vocabulary.md`, or drop the
+`subtask` group from a custom mode so the tool is never exposed.
+
 ## Inline answers (`create_html_artifact` guidance)
 
 "most of what you produce … should still just be a normal chat reply" · "only call this tool when the user
