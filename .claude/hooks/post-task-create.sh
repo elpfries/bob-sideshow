@@ -1,0 +1,1 @@
+../../.kimi-code/hooks/post-task-create.sh

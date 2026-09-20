@@ -159,15 +159,18 @@ no exit-code table were found; the config section is the only source.
 | bob-sideshow skill | Kimi Code equivalent | Verdict |
 |---|---|---|
 | bob-version | extension and SDK version, wire format version in records | trivial |
-| bob-telemetry | `wire.jsonl` per session: usage per model, tool calls, permission decisions | worth porting; money only when the provider reports it |
+| bob-telemetry | `wire.jsonl` per session: usage per model, tool calls, permission decisions | ported as a development-only skill (`.kimi-code/skills/kimi-telemetry`, not shipped): usage per model and agent, tool calls; money only when the provider reports it |
 | bob-security-model | the nineteen-policy chain, glob rules, sensitive-file and git-path asks | worth porting; the chain order is the thing to document |
 | bob-agent-rules | prompt in the bundle, profiles in YAML, AGENTS.md discovery order | worth porting; the secondary model is the Bob parallel to explain |
 | bob-override-rules | SYSTEM.md, permission rules, hooks, secondary model | unnecessary as a skill: every override is a file or a config key |
 
-Open items, all because no session has run: the exact layout of a session folder once written
-(`state.json`, `blobs/`, per-agent wire files), whether any provider adapter fills
-`total_cost_usd`, the subject string the `Bash` tool hands to rule matching (the module was not
-isolated), and what the v2 engine changes in the policy chain.
+Open items: whether any provider adapter fills `total_cost_usd`, the subject string the `Bash`
+tool hands to rule matching (the module was not isolated), and what the v2 engine changes in the
+policy chain. Resolved by a live CLI session on 2026-09-19 (wire `protocol_version` 1.5): the
+session folder holds per-agent wire files at `agents/<name>/wire.jsonl`, with `usage.record`
+lines per turn (`inputOther`, `output`, `inputCacheRead`, `inputCacheCreation`), tool calls nested
+in `context.append_loop_event`, and context sizes in `token_counting.measured` — read by the
+development-only skill `.kimi-code/skills/kimi-telemetry`.
 
 ## Landmarks
 

@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "BACKLOG_HOOK_RUNTIME=claude \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-task-done.sh\"",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "BACKLOG_HOOK_RUNTIME=claude \"$CLAUDE_PROJECT_DIR/.claude/hooks/post-task-create.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
