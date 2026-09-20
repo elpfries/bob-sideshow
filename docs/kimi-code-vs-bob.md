@@ -151,6 +151,13 @@ Hooks receive JSON on stdin with `hookEventName`, `sessionId`, `cwd` and the too
 blocking result from PreToolUse becomes a deny with the hook's reason. No `hooks.json` file and
 no exit-code table were found; the config section is the only source.
 
+Hooks can only be declared in the user-level `~/.kimi-code/config.toml` (or `$KIMI_CODE_HOME`):
+the project-local `.kimi-code/local.toml` only carries `[workspace].additional_dir`, so a
+project hook needs an absolute path in the user config (official docs, `configuration/config-files`,
+checked 2026-09-20). Config validation is lazy: `kimi session list` and `kimi provider list`
+exit 0 even on a malformed `config.toml`; session creation (`kimi -p`) is what fails loudly —
+verified on Homebrew kimi-code 2.0.1, 2026-09-20.
+
 **Model routing**: `[secondary_model]`, `modelPreference` in a profile, the `model` parameter of
 `Agent`.
 

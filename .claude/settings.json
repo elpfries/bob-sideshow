@@ -8,6 +8,11 @@
             "type": "command",
             "command": "BACKLOG_HOOK_RUNTIME=claude \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-task-done.sh\"",
             "timeout": 20
+          },
+          {
+            "type": "command",
+            "command": "BACKLOG_HOOK_RUNTIME=claude \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-task-start.sh\"",
+            "timeout": 20
           }
         ]
       }

@@ -1,0 +1,1 @@
+../../.kimi-code/hooks/pre-task-start.sh

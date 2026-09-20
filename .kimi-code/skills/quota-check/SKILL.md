@@ -26,6 +26,15 @@ Le port et le token changent au redémarrage — le script les relit à chaque a
 sondant le serveur à la main : il sert la SPA du web UI avec un code 200 sur toute route
 inconnue — seule une réponse JSON avec `code == 0` prouve que la route existe.
 
+## Porte de démarrage de tâche (hook `pre-task-start`)
+
+Le hook `.kimi-code/hooks/pre-task-start.sh` appelle ce script avant chaque
+`backlog task edit … -s "In Progress"` (runtime Kimi uniquement). Au-delà de **80 %** de la
+fenêtre 5 h consommée, le démarrage est refusé et l'agent planifie un `CronCreate` one-shot au
+reset de la fenêtre : la tâche reprend seule, sans action de l'utilisateur (la session doit
+rester ouverte). Seuil réglable par `BACKLOG_QUOTA_GATE_PCT` ; serveur injoignable = démarrage
+autorisé avec avertissement (fail-open). Le quota mensuel n'est pas gaté.
+
 En expliquant les chiffres :
 - `limit5h` : fenêtre glissante de 5 heures (rate limit).
 - `monthTotal` : quota mensuel global, partagé entre Kimi web et Kimi Code.
