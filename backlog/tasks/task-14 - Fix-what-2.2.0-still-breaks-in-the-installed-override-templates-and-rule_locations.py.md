@@ -7,7 +7,7 @@ status: Done
 assignee:
   - '@eric.bonkarma'
 created_date: '2026-09-28 22:40'
-updated_date: '2026-09-28 22:48'
+updated_date: '2026-09-28 22:49'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -76,6 +76,10 @@ Apres ./install.sh (ecriture sous ~/.bob/skills, seule ecriture autorisee) : pyt
 Verifications outillage : python3 -m py_compile skills/*/scripts/*.py OK ; shasum skills/*/scripts/_bobcheck.py -> un seul hash e9a89826b6cf29d313fbd83538da7f1acd06ed92 sur les cinq copies (fichier non touche) ; node --check templates/hooks/command-guard.mjs OK ; grep -rn /Users/ ericfries skills vide ; git status ne montre que les quatre fichiers attendus, rien sous private/ ; __pycache__ supprime sous skills/ avant le premier commit.
 
 Ce qui n a pas ete fait : pas de changement au perimetre de scan des agents/ et skills/ de rule_locations.py (les plugins/*/agents et plugins/*/skills ne sont pas dans les criteres d acceptation de TASK-14, qui portent seulement sur les racines de regles et la confiance) ; pas de note de reference, pas de README racine, pas de CHANGELOG ecrits (perimetre exclu par la tache).
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 33 appels API, ≈ 1,97 USD ≈ 1,70 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (c149f8d) et le commit de la tâche (ea28ffd), sous-agent compris. Fenêtre 7 min, temps effectif ≈ 4 min. Cohérent avec la durée rapportée par l'agent (6,2 min, 51 appels d'outils). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire).
+
+Vérification complémentaire de la session d'orchestration sur l'ordre de précédence choisi par l'agent (« sorte d'abord, racines dedans ») : la fonction de rendu du bundle 2.2.0 construit cinq groupes dans l'ordre workspace_rules_<mode>, workspace_rules, agents_md, global_rules_<mode>, global_rules, chacun recevant la liste de fichiers déjà fusionnée (racine .bob puis plugins). La ligne « precedence » imprimée par rule_locations.py est donc conforme au bundle, pas seulement à la note.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
