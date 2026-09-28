@@ -4,7 +4,7 @@ title: Re-locate the 2.2.0 bundle facts and re-anchor them on durable literals
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 20:30'
+updated_date: '2026-09-28 20:58'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -74,4 +74,17 @@ compare-2.1.0-2.2.0.txt). Ce qui est fixé pour cette tâche :
    et MCP ; la chaîne « Project Instructions (AGENTS.md) » n'existe plus en 2.2.0. À relocaliser depuis
    le préambule « take precedence over your training defaults » (identique) et ses voisines.
 Le mode « anchor » de l'outil est le moyen de preuve attendu pour chaque claim : citer son verdict.
+
+## Entrees de TASK-13.4 — 2026-09-28 : la page docs/bob-2.1.0-to-2.2.0.md fait autorite
+
+Lire la page avant de toucher aux notes ; les verdicts detailles sont dans private/diff/anchors-verdicts.txt (102 ancres). Ce qui revient a cette tache :
+
+1. DEFAUT DE SKILL CONSTATE, correction obligatoire : templates/agents/explore-premium.md porte model: premium ; 2.2.0 leve l erreur "model" is not supported in <fichier>, use "modelTier" instead, et valide modelTier contre fast, premium, ultra, explorer. Passer le template et l exemple de frontmatter de injected-rules.md a modelTier. Les autres champs (maxTurns, rawPrompt, allowForkContext, allowTools, denyTools, groups) sont IDENTICAL.
+2. injected-rules.md, precedence des regles : ordre des sortes inchange (workspace mode, workspace commun, AGENTS.md, global mode, global commun) mais rendu XML : balises workspace_rules_<mode>, workspace_rules, agents_md, global_rules_<mode>, global_rules, chacune avec des elements rule / filename / content ; racines .bob puis .bob/plugins/<nom>/ par ordre alphabetique, rules/ et rules-<mode>/ dans chaque racine ; preambule identique (468 caracteres). Ancrer sur agents_md et sur le preambule, plus jamais sur Project Instructions (AGENTS.md).
+3. injected-rules.md, prompt layout : la liste de sections depend de la config choisie par le modele (default, boreas, aquarius, orion) ; ne pas figer une liste unique, renvoyer a ce que 13.2 lira sur un prompt stocke 2.2.0.
+4. injected-rules.md, sous-agents et tiers : preset explore identique au renommage model vers modelTier pres ; table des tiers et mapping production byte-identiques ; tiers internes security et background non selectionnables ; SUBAGENT_FORBIDDEN_TOOLS inchange. Le chiffre 25 tours du preset general n a aucune source litterale dans les deux bundles : retrouver la source ou le marquer non verifie.
+5. approvals.md : portes shouldAutoApprove / validateToolExecution / _alwaysAllowedTools SAME LOGIC, isBobHomeWrite IDENTICAL, defauts d approbation et liste de commandes par defaut identiques ; heuristiques regex, regle 5000 caracteres, timeout 15 s et fail-closed identiques ; le modele n est plus openai/gpt-oss-20b via le flag command-security-model : la verification demande le tier security a un routeur serveur, repli premium-ide. Le matcher de jetons (table a six lignes, approval_check.py) n a pas ete relu : le faire sur la fonction 2.2.0 atteinte depuis validateToolExecution.
+6. Contrat de hooks 2.2.0 : sept evenements (PreCompact et PostCompact en plus), handler http (url, headers, allowedEnvVars, timeout), sortie JSON parsee (hookSpecificOutput.updatedInput, permissionDecision deny, decision block, additionalContext), texte brut sur PreToolUse ignore avec avertissement, exit 2 bloque aussi PreCompact et ne bloque pas PostCompact, SessionStart.source compact. command-guard.mjs reste valide (stderr + exit 2) mais son en-tete dit contrat 2.1.0 et le hook doc doit mentionner la voie JSON.
+7. command-migration.md : aucun litteral ancre par 13.4 ; verifier si les globs du migrateur ont gagne plugins/ (la chaine {skills/*,*/skills/*}/ a disparu de 2.2.0).
+8. Regle pour toutes les ancres reecrites : texte de prompt, cle de settings, message, nom de methode ou de cle ; jamais un nom d export (SUBAGENT_PRESETS, MODEL_TIERS, loadWorkspaceRules, getBestCommandMatch, DEFAULT_APPROVED_COMMANDS, assessCommandSecurity, featureFlagsSchema, isWorkspaceTrusted, INIT_BASE_PROMPT sont tous des noms d export disparus par bundling).
 <!-- SECTION:NOTES:END -->
