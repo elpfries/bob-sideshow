@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@eric.bonkarma'
 created_date: '2026-09-28 19:34'
-updated_date: '2026-09-28 22:26'
+updated_date: '2026-09-28 22:28'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -126,6 +126,8 @@ AC #3 : grep -rn "2.1.0" --include=*.md --include=*.py --include=*.mjs --include
 AC #4 : liste nommee dans la note "2.1.0 mentions kept, with reason" ci-dessus -- skills/bob-override-rules/scripts/rule_locations.py (docstring : "Not re-verified on bob-code 2.2.0", raison plugins/ et trustedFolders.json) et skills/bob-agent-rules/reference/injected-rules.md ligne de facturation ("Not re-verified... measured on the 2.1.0 database", laissee telle quelle par TASK-13.1, aucune re-mesure transmise par TASK-13.2).
 AC #5 : CHANGELOG.md, section "0.2 -- unreleased", nouvelle entree "Re-labelled for IBM Bob 2.2.0" avec neuf puces (modelTier, hooks/JSON/HTTPS, autoCompact, securite tier server-routed, execute_command background, prompt registry/plugins, key_value_store, _meta.spend reduit, bibliotheques) plus la puce sur le bump VERIFIED_*.
 AC #6 : python3 -m py_compile skills/*/scripts/*.py termine sans erreur (code retour 0, aucune sortie) ; node --check skills/bob-override-rules/templates/hooks/command-guard.mjs termine sans erreur ; grep -rn "/Users/|ericfries" skills docs README.md CHANGELOG.md ne retourne rien (grep exit 1) ; git status ne montre aucun fichier sous private/ parmi les modifications.
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 97 appels API (sonnet-5 : 89 pour l'agent d'implémentation, fable-5-1 : 6 pour l'orchestration, 2 appels synthétiques sans coût), 16 080 tokens de sortie, 16 266 088 cache read, 421 933 cache write, ≈ 7,69 USD ≈ 6,62 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (29b6f1c) et les deux commits de la tâche (0437172, ffa1bca), sous-agent compris. Le chiffre couvre UNE TENTATIVE INTERROMPUE : l'agent a été coupé par une limite de session (HTTP 429) après 82 appels d'outils, juste avant la clôture, puis repris avec son contexte intact (17 appels d'outils) — aucun travail refait. Fenêtre 25 min, temps effectif ≈ 13 min ; les ≈ 12 min de pause sont la coupure et l'attente de la reprise par l'utilisateur, pas du traitement. Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire).
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
