@@ -4,7 +4,7 @@ title: Re-verify bob-sideshow against IBM Bob 2.2.0
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 19:40'
+updated_date: '2026-09-28 22:26'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -38,3 +38,14 @@ AGENTS.md requires every fact to state the build it was read from, and `VERIFIED
 - [ ] #6 The documented hook event set and hook payload contract, including the shipped guard template, match 2.2.0
 - [ ] #7 Any fact that could not be re-verified on 2.2.0 is marked as such instead of being carried over silently
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+2026-09-29 -- Les quatre sous-taches de TASK-13 sont closes. Preuves :
+- TASK-13.4 (page docs/) : commit fec4c78, docs/bob-2.1.0-to-2.2.0.md.
+- TASK-13.1 (relocalisation des faits 2.2.0, template explore-premium.md, contrat command-guard.mjs) : commits d16cec7 et 770d8e5.
+- TASK-13.2 (re-verification base et scripts sur bob-code 2.2.0) : commit df6dace.
+- TASK-13.3 (re-etiquetage du projet en 2.2.0, bump VERIFIED_*) : commit 0437172.
+Details et preuves d execution dans les notes de chaque sous-tache. TASK-13 elle-meme et la milestone ne sont pas cloturees par cette note.
+<!-- SECTION:NOTES:END -->
