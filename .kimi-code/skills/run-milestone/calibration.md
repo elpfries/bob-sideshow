@@ -43,7 +43,10 @@ de repli 1 USD = 0,8610 EUR), pas une facture. Le coût inclut l'orchestration.
 | TASK-13.2 — base et scripts sur trafic 2.2.0 réel | vérification + 2 scripts corrigés, vérificateur indépendant | Sonnet | 3,31 EUR | 15 min |
 | TASK-13.3 — ré-étiquetage, `VERIFIED_*`, CHANGELOG | 20 fichiers, 1 coupure de session reprise sans travail refait | Sonnet | 6,62 EUR | 13 min |
 | (hors tâche) clôture : TASK-13 prouvée et close, `install.sh` à froid, calibration | orchestration | Fable (session) | 2,50 EUR | 3 min |
-| **Total** | 4 sous-tâches + parente + orchestration | | **61,02 EUR** | **122 min** |
+| (hors tâche) réouverture : deux restes trouvés à froid, TASK-14 et TASK-15 créées | rédaction backlog | Fable (session) | 2,84 EUR | 4 min |
+| TASK-14 — `premium-subagents.md` (`modelTier`), `rule_locations.py` sur les racines `plugins/` et la confiance 2.2.0 | correction ciblée, test sur dossier jetable | Sonnet | 1,70 EUR | 4 min |
+| TASK-15 — procédure de re-vérification en huit étapes, 46 ancres durables, baseline 2.2.0, répétition à blanc | outillage privé + vérificateur indépendant | Sonnet | 3,31 EUR | 15 min |
+| **Total** | 6 tâches + parente + orchestration | | **68,87 EUR** | **145 min** |
 
 Deux critères ont exigé l'utilisateur (son Bob, son compte) : lancer une tâche
 Bob 2.2.0 pour produire des appels tarifés et un prompt stocké, et charger le

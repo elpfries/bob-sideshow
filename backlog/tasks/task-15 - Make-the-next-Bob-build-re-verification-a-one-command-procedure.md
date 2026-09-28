@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@eric.bonkarma'
 created_date: '2026-09-28 22:40'
-updated_date: '2026-09-28 23:04'
+updated_date: '2026-09-28 23:05'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -128,6 +128,8 @@ AC #2 : commande python3 private/bundle_tools.py --landmarks executee contre le 
 AC #3 : private/baseline-2.2.0/ (app/product.json, app/extensions/bob-code/package.json, app/extensions/bob-code/dist/extension.js, app/extensions/bob-code/dist/translations/en.json, README.md) present sur disque. sha1 et sha256 de extension.js recalcules independamment par le verificateur, identiques entre la copie et le fichier installe et identiques a ceux ecrits dans le README (sha1 6afa9f9c6012df40e49cb863151c492e80c237f8, sha256 c2c910ef281691caa8717aca0ff7ca993dbc68ed6b8ddbf2b9f28c79f2a693ce). Chaine de build confirmee par python3 skills/bob-version/scripts/bob_version.py rejoue par le verificateur : 1.126.0+bob2.2.0.20260924155054, meme sha1, schema 011_key_value_store, reference MATCH.
 
 AC #4 : docstring de private/bundle_diff.py (note d usage complete, quatre sous-commandes avec syntaxe exacte, plus la section Literal-matching gotcha). Repetition a blanc rejouee independamment par le verificateur : bundle_diff.py anchors baseline-2.2.0 contre installe sur private/diff/landmarks.txt -> 0 MISSING, tout IDENTICAL ou SAME ; bundle_diff.py extract de la baseline-2.2.0 puis compare contre private/diff/2.2.0 -> zero difference d octets, de tokens, de chaines et de proprietes. Defaut de bundle_diff.py sur les ancres ponctuees reproduit independamment (0 correspondance pour les formes avec guillemets ou deux points, correspondances trouvees pour les formes nues).
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 83 appels API, ≈ 3,84 USD ≈ 3,31 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (9a4da0a) et le commit de la tâche (28dc89c), sous-agent et son vérificateur indépendant compris. Fenêtre 15 min, temps effectif ≈ 15 min, aucune pause. Cohérent avec la durée rapportée par l'agent (14,9 min, 81 appels d'outils). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire). Contrôle refait depuis la session principale après le commit : bundle_tools.py --landmarks → 46/46 présentes sur le bundle 2.2.0 installé ; baseline-2.2.0/extension.js sha1 6afa9f9c… ; py_compile de private/*.py OK.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
