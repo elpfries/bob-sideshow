@@ -4,7 +4,7 @@ title: Re-verify the database and script surface on the 2.2.0 schema
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 20:58'
+updated_date: '2026-09-28 21:33'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -71,4 +71,13 @@ A verifier sur la base vivante et sur un prompt stocke 2.2.0 :
 4. Tarifs : rien dans le diff ne touche la tarification ; les deux taux 2.1.0 (2.0 et 0.833 Bobcoins par million) se mesurent sur private/baseline-2.1.0/bob.db.2.1.0-snapshot (68 messages avec _meta.spend), les taux 2.2.0 sur la base vivante apres trafic. Si un appel de securite ou de resume apparait avec un autre taux, il vient des tiers internes security et background.
 5. Schema : CREATE TABLE de tasks, messages, attribution_logs, task_pending_approvals et INSERT INTO attribution_logs byte-identiques ; seule addition key_value_store et la migration 011. VERIFIED_SCHEMA devra dire 011_key_value_store (13.3).
 6. Settings : autoCondense / autoCondenseContext / compactionThreshold sont migres en session.autoCompact et session.compactionThresholdPercent a la lecture ; chat.chatWidth et session.promptConfigPath nouveaux ; hooks par defaut avec PreCompact et PostCompact.
+
+Notes transmises par TASK-13.1 (2026-09-28), re-verification des trois notes de reference et du template sur bob-code 2.2.0, build 1.126.0+bob2.2.0.20260924155054. Ce qui reste ouvert et vous concerne :
+
+1. Prompt layout reellement recu en production : la liste des sections depend desormais d un prompt config choisi par le modele (default, boreas, aquarius, orion, choisi par le prefixe le plus long de provider/family/version). Quel modele recoit quelle config n est pas lisible dans le bundle. A verifier sur un prompt reellement stocke par bob-code 2.2.0 (dump_system_prompt.py). Deux configs ajoutent des sections (boreas : task_execution, when_stuck ; orion : act_and_iterate, ground_truth, define_done, prove_done).
+2. Rendu XML de project_rules : confirme par lecture du code (balises workspace_rules_<mode>, workspace_rules, agents_md, global_rules_<mode>, global_rules, chacune avec des elements rule/filename/content), mais jamais vu sur une sortie reelle. A confirmer sur un dump reel.
+3. Facturation premium-ide / explorer (2.0 et 0.833 Bobcoins par million de tokens) : mesuree sur la base 2.1.0 uniquement (le champ messages.data._meta.spend). Rien dans le diff de code ne touche la tarification, mais les tarifs doivent etre re-mesures sur du trafic 2.2.0 reel.
+4. Schema de la base sous 2.2.0 : la migration 011_key_value_store est deja appliquee et cache featureFlags.v1 (2020 caracteres JSON) ; les quatre autres tables restent byte-identiques (migrations 001 a 010). Reste a verifier si messages.data porte toujours _meta.spend par appel de la meme facon sous 2.2.0.
+5. Modele de securite via routeur : le controle de commande demande desormais le tier interne security a un routeur serveur (POST vers /chat/completions, metadata.model_tier=security), repli local premium-ide si le routeur echoue. Le flag serveur command-security-model existe toujours cote etat IDE mais n est plus lu par le controle ; si le routeur repond bien avec ce meme modele reste une question de base/traffic, pas de bundle.
+6. Compaction : la note injected-rules.md affirme que la compaction utilise le modele de la tache ; ce point n a pas ete re-verifie sur 2.2.0 et reste marque non verifie.
 <!-- SECTION:NOTES:END -->

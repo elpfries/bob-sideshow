@@ -3,7 +3,7 @@ name: explore-premium
 description: Explore and analyse the codebase on the premium model (read-only)
 groups:
   - read
-model: premium
+modelTier: premium
 maxTurns: 50
 rawPrompt: true
 allowForkContext: true
