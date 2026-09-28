@@ -5,7 +5,7 @@ economy `explorer` model.
 
 - Never use the built-in `explore` subagent.
 - For read-only exploration or analysis, use `explore-premium` (defined in
-  `.bob/agents/explore-premium.md`, `model: premium`).
+  `.bob/agents/explore-premium.md`, `modelTier: premium`).
 - For anything else, use `general`: it inherits the current mode's tools and the default model.
 - Never describe a subagent as running on the most capable model unless it was `explore-premium`
   or `general`.

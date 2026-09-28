@@ -4,7 +4,7 @@ title: Make the next Bob build re-verification a one-command procedure
 status: To Do
 assignee: []
 created_date: '2026-09-28 22:40'
-updated_date: '2026-09-28 22:41'
+updated_date: '2026-09-28 22:47'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -41,4 +41,18 @@ Tout vit en private/ (gitignoré, jamais commité) :
 - private/benchmark-harness.md — notes m-0 ; ses ancres (shouldAutoApprove, validateToolExecution, handleUiReply, task_pending_approvals, _alwaysAllowedTools, hooks cannot block, Extension activated) sont vérifiées présentes en 2.2.0 par 13.4 ; ne pas les toucher, seulement les citer comme durables.
 - La règle des ancres durables et la section « Re-checking on the next build » : docs/bob-2.1.0-to-2.2.0.md.
 - Limites connues de l'outil, à documenter plutôt qu'à corriger si le temps manque : la règle d'interop rend invisible un vrai changement qui aurait exactement la forme « . nom » retiré ; l'étiquetage d'origine reste heuristique.
+
+Pointeurs transmis par TASK-14 (2026-09-29) pour la procedure de re-verification.
+
+Ancres relues et leur verdict, telles qu utilisees dans TASK-14 (aucune n est un nom d export) :
+- use "modelTier" instead (anchor MISSING en 2.1.0, CHANGED en 2.2.0 sur modelTier) : sert a justifier la correction model: -> modelTier: dans templates/rules/premium-subagents.md, deja appliquee. A garder dans la liste des ancres durables.
+- plugins/*/ (anchor MISSING en 2.1.0) : sert a justifier l ajout des racines .bob/plugins/<nom>/ dans rule_locations.py.
+- trustedFolders.json (anchor MISSING en 2.2.0) : sert a justifier le retrait de ce fichier comme source de verite pour la confiance dans rule_locations.py.
+- take precedence over your training defaults (SAME string, 468 caracteres) : preambule des regles inchange, non retouche.
+
+Point d ambiguite resolu pendant TASK-14, a verser dans la procedure : la phrase de injected-rules.md project_rules ("each root above also includes every directory ... i.e. root 1/2 really read .bob/ then .bob/plugins/<name>/ alphabetically ... Precedence between the five kinds above is unchanged; precedence between roots is .bob/ first, plugins alphabetically after") peut se lire de deux facons. TASK-14 a retenu la lecture "kind-first, root-second" : rules-<mode> (base puis plugins alphabetique) prime entierement sur rules (base puis plugins alphabetique), qui prime sur AGENTS.md, plutot que "tous les plugins groupes apres les deux racines de base" (c etait la formulation initiale, plus grossiere, dans la description de TASK-14 elle-meme, corrigee ici). Verifie par execution sur un dossier jetable (.bob/rules/a.md, .bob/rules-agent/b.md, .bob/plugins/zeta/rules/c.md, .bob/plugins/alpha/rules/d.md) : ordre obtenu b, a, d, c - alpha avant zeta. Note que ce jeu de test ne distingue pas les deux lectures possibles (aucun plugin n a de rules-<mode> dans le test) ; si TASK-15 relit ce point sur un nouveau build, un test avec un plugin possedant a la fois rules-<mode>/ et rules/ trancherait sans ambiguite entre les deux lectures.
+
+Fichier modifie utile a la procedure : skills/bob-override-rules/scripts/rule_locations.py (nouvelle fonction rule_dirs()) peut servir de reference d implementation si private/bundle_tools.py doit un jour exposer la meme logique de precedence.
+
+TASK-14 n a pas touche private/ ni rien commite hors de skills/bob-override-rules/.
 <!-- SECTION:NOTES:END -->

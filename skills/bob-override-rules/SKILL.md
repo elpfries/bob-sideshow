@@ -10,8 +10,10 @@ metadata:
 1. Ask what to override if unclear, then pick the template in `templates/rules/`
    (`templates/README.md` maps goal → file). A model override also needs
    `templates/agents/explore-premium.md` copied to `.bob/agents/`.
-2. Pick the folder. Strongest first: `.bob/rules-<mode>/` → `.bob/rules/` → `AGENTS.md` →
-   `~/.bob/rules-<mode>/` → `~/.bob/rules/`. Default: workspace `.bob/rules/`. Never AGENTS.md:
+2. Pick the folder. Strongest first: `.bob/rules-<mode>/` → `.bob/plugins/<name>/rules-<mode>/`
+   (alphabetical) → `.bob/rules/` → `.bob/plugins/<name>/rules/` (alphabetical) → `AGENTS.md` →
+   `~/.bob/rules-<mode>/` → `~/.bob/plugins/<name>/rules-<mode>/` (alphabetical) → `~/.bob/rules/` →
+   `~/.bob/plugins/<name>/rules/` (alphabetical). Default: workspace `.bob/rules/`. Never AGENTS.md:
    it ranks lower and `/init` may rewrite it.
 3. `python3 "<skill-dir>/scripts/rule_locations.py"` shows existing rules, agents, hooks and
    `/init` leftovers.
