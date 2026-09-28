@@ -4,7 +4,7 @@ title: Re-verify the database and script surface on the 2.2.0 schema
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 20:01'
+updated_date: '2026-09-28 20:30'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -48,4 +48,16 @@ comparaison avant/après se fait entre ce fichier et la base vivante.
 
 Ces deux critères se prouvent maintenant par exécution ; ils ne peuvent pas être cochés sur un
 raisonnement, et s'il manque du trafic 2.2.0 il faut le dire plutôt que contourner.
+
+## Tranché par l'analyse de TASK-13.4 — 2026-09-28 (PRIME sur la description)
+
+Entrées établies pour cette tâche (preuves dans TASK-13.4) :
+- Les balises <base_rules>, <tool_use>, <engineering_discipline>, <investigate_before_answering>,
+  <auto_appended_context>, <markdown_rules> ont quitté les littéraux du bundle 2.2.0 : vérifier sur un
+  prompt STOCKÉ 2.2.0 si elles sont encore assemblées (dump_system_prompt.py découpe dessus).
+- key_value_store : « INSERT INTO key_value_store (key, value_json) … ON CONFLICT(key) DO UPDATE ».
+- Le repli « openai/gpt-oss-20b » a quitté la fonction de contrôle de sécurité ; le server flag
+  command-security-model est toujours poussé (vu dans state.vscdb) — dire où le modèle est choisi.
+- Les tarifs 2.1.0 se mesurent sur le snapshot private/baseline-2.1.0/bob.db.2.1.0-snapshot, les 2.2.0
+  sur la base vivante après le trafic généré par l'utilisateur.
 <!-- SECTION:NOTES:END -->

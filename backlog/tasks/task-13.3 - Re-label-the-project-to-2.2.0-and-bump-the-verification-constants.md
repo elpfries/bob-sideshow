@@ -4,7 +4,7 @@ title: Re-label the project to 2.2.0 and bump the verification constants
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:34'
-updated_date: '2026-09-28 19:40'
+updated_date: '2026-09-28 20:30'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -34,3 +34,16 @@ CHANGELOG gets the entry that lets a reader tell what moved between the two buil
 - [ ] #5 CHANGELOG records the move to 2.2.0 and what changed in Bob between the two builds
 - [ ] #6 `python3 -m py_compile skills/*/scripts/*.py` and `node --check skills/bob-override-rules/templates/hooks/command-guard.mjs` pass
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Tranché par l'analyse de TASK-13.4 — 2026-09-28 (PRIME sur la description)
+
+- Le build 2.1.0 de référence des notes (sha1 d8b1130e…, suffixe 20260827055214) n'est PAS le build
+  2.1.0 téléchargé (sha1 f5ebecbd…, 9 octets d'écart, autre run Jenkins). Le ré-étiquetage doit citer le
+  build 2.2.0 installé (1.126.0+bob2.2.0.20260924155054, extension.js sha1 6afa9f9c…) et, pour ce qui
+  reste attribué à 2.1.0, la chaîne de build des notes, sans prétendre à un diff octet pour octet.
+- Le CHANGELOG doit reprendre le delta comportemental consigné dans TASK-13.4 (agents modelTier, hooks,
+  settings, sécurité, execute_command background, prompt), pas seulement le bump de version.
+<!-- SECTION:NOTES:END -->
