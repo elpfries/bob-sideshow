@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@eric.bonkarma'
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 22:00'
+updated_date: '2026-09-28 22:02'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -134,6 +134,8 @@ AC #3 : sortie reelle de dump_system_prompt.py --list --task f93b et --task e860
 AC #4 : sortie reelle de bob_telemetry.py pour les sept vues (summary, tasks, calls, tools, security, changes, context) executee sur private/baseline-2.1.0/bob.db.2.1.0-snapshot et sur la base vivante apres trafic 2.2.0, sans erreur; les totaux du snapshot (4.7217 Bobcoins, 129 appels, 14 taches racines, 4 sous-agents) et de la base vivante (5.3198 Bobcoins, 147 appels, 17 taches racines, 5 sous-agents) verifies deux fois, une premiere fois par le producteur, une seconde fois independamment par l agent verificateur ab9c20f0f127917f8 qui a reproduit les memes chiffres.
 
 AC #5 : sortie reelle de bob_version.py et bob_version.py --json sur l installation reelle, chaque champ confronte a docs/bob-2.1.0-to-2.2.0.md (build 1.126.0+bob2.2.0.20260924155054, sha1 6afa9f9c6012df40e49cb863151c492e80c237f8, bundleBytes 10622906, commit 30bf4b86252b, schema 011_key_value_store) et a une requete directe sur _migrations; les 15 cles de server flags affichees apres correction, avec command-security-model et summary-model annotes pushed not read by 2.2.0; verification independante par ab9c20f0f127917f8 confirmant la meme sortie.
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 88 appels API (sonnet-5 : 87 pour l'agent d'implémentation et son vérificateur indépendant, fable-5-1 : 1 pour l'orchestration), 10 186 tokens de sortie, 10 934 129 cache read, 254 679 cache write, ≈ 3,85 USD ≈ 3,31 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (770d8e5) et le commit de la tâche (df6dace), sous-agents compris. Fenêtre 15 min, temps effectif ≈ 15 min, aucune pause. Cohérent avec la durée rapportée par l'agent (14,5 min, 89 appels d'outils). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire).
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
