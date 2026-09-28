@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@eric.bonkarma'
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 21:34'
+updated_date: '2026-09-28 21:35'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -196,6 +196,8 @@ Chargement reel de explore-premium.md dans une tache Bob 2.2.0 (critere 7, non e
 Verification bloc par bloc du contenu des blocs de guidage outil (getSystemPromptPart, 11 definitions par build) au dela du comptage deja etabli par TASK-13.4.
 Re-mesure de la facturation et re-verification de messages.data._meta.spend sur trafic 2.2.0 (transmis a TASK-13.2).
 Modification de _bobcheck.py, des titres, des docstrings de version (hors perimetre, reserve a TASK-13.3).
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 116 appels API (sonnet-5 : 97 pour l'agent d'implémentation, fable-5-1 : 19 pour l'orchestration), 34 939 tokens de sortie, 17 756 876 cache read, 325 704 cache write, ≈ 8,44 USD ≈ 7,27 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (b505cb6) et le commit de la tâche (d16cec7), sous-agent compris. Fenêtre 20 min, temps effectif ≈ 18 min, ≈ 2 min de pause (un écart > 120 s, passe de l'outil de diff sur les bundles). Cohérent avec la durée rapportée par l'agent (19,6 min, 109 appels d'outils). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire).
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
