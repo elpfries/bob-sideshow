@@ -42,7 +42,8 @@ de repli 1 USD = 0,8610 EUR), pas une facture. Le coût inclut l'orchestration.
 | TASK-13.1 — faits et ancres 2.2.0, template réparé | relecture claim par claim de 3 notes, 193 littéraux vérifiés | Sonnet | 7,27 EUR | 18 min |
 | TASK-13.2 — base et scripts sur trafic 2.2.0 réel | vérification + 2 scripts corrigés, vérificateur indépendant | Sonnet | 3,31 EUR | 15 min |
 | TASK-13.3 — ré-étiquetage, `VERIFIED_*`, CHANGELOG | 20 fichiers, 1 coupure de session reprise sans travail refait | Sonnet | 6,62 EUR | 13 min |
-| **Total** | 4 sous-tâches + parente + orchestration | | **58,52 EUR** | **119 min** |
+| (hors tâche) clôture : TASK-13 prouvée et close, `install.sh` à froid, calibration | orchestration | Fable (session) | 2,50 EUR | 3 min |
+| **Total** | 4 sous-tâches + parente + orchestration | | **61,02 EUR** | **122 min** |
 
 Deux critères ont exigé l'utilisateur (son Bob, son compte) : lancer une tâche
 Bob 2.2.0 pour produire des appels tarifés et un prompt stocké, et charger le
