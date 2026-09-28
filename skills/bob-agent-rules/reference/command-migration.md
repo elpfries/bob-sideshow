@@ -1,4 +1,4 @@
-# Command-to-skill migration — bob-code 2.1.0
+# Command-to-skill migration — bob-code 2.2.0
 
 Skills appearing in `.bob/skills/` that nobody created, coming back after every deletion.
 Nothing to do with `/init`, which only writes `AGENTS.md` and `.bob/rules-<mode>/AGENTS.md` — confirmed unchanged

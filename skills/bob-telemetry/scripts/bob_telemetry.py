@@ -4,7 +4,8 @@
   bob_telemetry.py summary|tasks|calls|tools|security|changes|context [--task PREFIX] [--since YYYY-MM-DD]
                    [--db PATH] [--json]
 
-Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.1.0 schema.
+Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.2.0 schema
+(011_key_value_store); re-verified 2026-09-28 on live bob-code 2.2.0 traffic.
 
 On calls made by bob-code 2.2.0 (checked on live 2.2.0 traffic, 2026-09-28), messages.data._meta.spend
 carries only {cost, contextTokens} — input/output/cacheRead/cacheWrite/reasoningTokens are gone, so the

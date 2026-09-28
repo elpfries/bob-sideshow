@@ -11,6 +11,40 @@ Two more Bob behaviours you can now explain and stop.
 - **Get a Backlog task when you ask for a task.** Ask why Bob starts a subtask instead of creating
   a tracker task and it explains the mix-up; ask it to stop and it writes the rule that makes
   "task" mean your tracker again.
+- **Re-labelled for IBM Bob 2.2.0** (`bob-code` 2.2.0, build `1.126.0+bob2.2.0.20260924155054`);
+  full delta at [docs/bob-2.1.0-to-2.2.0.md](docs/bob-2.1.0-to-2.2.0.md):
+  - **Custom agents: `model:` is now an error, use `modelTier:`.** Bob 2.2.0 rejects the old
+    frontmatter field instead of ignoring it; the shipped `explore-premium.md` template is fixed.
+  - **Hooks: seven events instead of five, HTTPS handlers, structured JSON replies.**
+    `PreCompact`/`PostCompact` are new; a hook can answer with `hookSpecificOutput`
+    (`updatedInput`, `permissionDecision`, `additionalContext`) instead of only exit code 2, and
+    can be a `{"type":"http", "url":…}` handler next to a shell command.
+    `skills/bob-override-rules/templates/hooks/command-guard.mjs` keeps its simpler stderr + exit
+    2 contract, which 2.2.0 still honours unchanged.
+  - **Settings: `autoCondense*` renamed to `autoCompact` / `compactionThresholdPercent`.** Old
+    files still load, migrated on read; defaults unchanged (on, 90%).
+  - **Command security check moved off a flag and onto a server-routed model tier.** 2.1.0 read
+    `command-security-model` and fell back to `openai/gpt-oss-20b`; 2.2.0 asks the server for tier
+    `security` (falling back to `premium-ide` if the router fails). `command-security-model` and
+    `summary-model` are still pushed by the server but no longer read for that purpose.
+  - **`execute_command` gains a `background` mode**: the process is detached, output goes to a log
+    file, and the tool returns immediately with the pid.
+  - **System prompt: discipline rules, per-model layouts, XML rule tags.** New prompt-section
+    registry with four configs (`default`, `boreas`, `aquarius`, `orion`) chosen by model id, a
+    `promptConfigPath` override, `<agents_md>`/`<workspace_rules>`/`<global_rules>` XML tags
+    instead of markdown headings, and a `.bob/plugins/*/` subdirectory added to every rule and
+    skill root.
+  - **Database: new `key_value_store` table** (migration `011_key_value_store`), caching the
+    server feature flags (`featureFlags.v1`).
+  - **`_meta.spend` on an LLM call is now `{cost, contextTokens}` only** — token breakdown
+    (input/output/cache/reasoning) is gone, so `bob-telemetry` can no longer infer the model class
+    from the unit price on 2.2.0 traffic; cost totals are unaffected.
+  - Libraries: PostHog and LangChain/LangGraph/LangSmith removed; gRPC, a larger MCP SDK
+    (protocol v2) and a bigger OTLP trace exporter added.
+  - Bumped `VERIFIED_EXTENSION` to `2.2.0` and `VERIFIED_SCHEMA` to `011_key_value_store` in the
+    five copies of `_bobcheck.py`; every shipped script and reference note now states 2.2.0 for
+    the facts re-verified on it, and 2.1.0, explicitly, for the few not re-checked
+    (`rule_locations.py`'s precedence line, the unit-price rates in `bob-agent-rules`).
 
 ## 0.1 — 2026-09-08
 

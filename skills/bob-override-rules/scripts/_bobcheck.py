@@ -12,8 +12,8 @@ import shutil
 import sqlite3
 import sys
 
-VERIFIED_EXTENSION = "2.1.0"
-VERIFIED_SCHEMA = "010_pending_approvals"
+VERIFIED_EXTENSION = "2.2.0"
+VERIFIED_SCHEMA = "011_key_value_store"
 HOME = os.path.expanduser("~")
 
 
@@ -82,7 +82,7 @@ def check(script, db_path=None, quiet=False, strict=False, logic_from_bundle=Fal
               "verifiedSchema": VERIFIED_SCHEMA, "match": not problems, "problems": problems}
     if not quiet:
         if problems:
-            hint = "matcher logic comes from the 2.1.0 bundle" if logic_from_bundle else "unknown fields are ignored"
+            hint = "matcher logic comes from the 2.2.0 bundle" if logic_from_bundle else "unknown fields are ignored"
             print("[bob-sideshow] WARNING: " + "; ".join(problems) + f" — {hint}", file=sys.stderr)
         else:
             print(f"[bob-sideshow] bob-code {ext}" + (f", schema {schema}" if schema else "") + " — verified build",

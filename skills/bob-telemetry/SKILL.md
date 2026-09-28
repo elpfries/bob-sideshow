@@ -17,7 +17,7 @@ description: Use when the user asks what IBM Bob consumed or did — Bobcoins, t
 | `changes` | files Bob edited |
 | `context` | what fills the context window |
 
-When explaining (build 2.1.0):
+When explaining (build 2.2.0):
 - `cost` is in Bobcoins.
 - A root task's cost includes its subagents, its tokens do not: never add parent and subagent rows.
 - Bob stores no model name; the class is inferred from the unit price — ≈ 2.0 Bobcoins per

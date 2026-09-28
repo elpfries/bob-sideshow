@@ -3,7 +3,12 @@
 
   rule_locations.py [--workspace DIR]
 
-Read-only; standard library only. Folders and precedence reverse-engineered from bob-code 2.1.0.
+Read-only; standard library only. Folders and precedence reverse-engineered from bob-code 2.1.0,
+build 1.126.0+bob2.1.0.20260827055214. Not re-verified on bob-code 2.2.0: docs/bob-2.1.0-to-2.2.0.md
+section 2 documents a plugins/ subdirectory (.bob/plugins/<name>/, ~/.bob/plugins/<name>/) added to
+the rule and skill roots on 2.2.0, not reflected in the precedence line or the scopes this script
+prints; the trustedFolders.json check below reads a store 2.2.0's own trust decision no longer
+consults (it reads workspace.isTrusted from the IDE instead).
 """
 import argparse
 import glob

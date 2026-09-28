@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Would IBM Bob (bob-code 2.1.0) auto-approve this shell command?
+"""Would IBM Bob (bob-code 2.2.0) auto-approve this shell command?
 
   approval_check.py "<command line>" [--settings PATH] [--approved PAT ...] [--denied PAT ...] [--json]
 

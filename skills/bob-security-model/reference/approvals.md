@@ -1,4 +1,4 @@
-# Approvals in IBM Bob — bob-code 2.1.0
+# Approvals in IBM Bob — bob-code 2.2.0
 
 From `dist/extension.js` (`shouldAutoApprove`, `validateToolExecution`, `_alwaysAllowedTools`, `requiresSecurityApproval`,
 `isBobHomeWrite`, hook runner) and the webviews. Re-verified against bob-code 2.2.0, build

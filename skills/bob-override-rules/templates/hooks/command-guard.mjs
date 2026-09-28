@@ -1,4 +1,4 @@
-// .bob/hooks/command-guard.mjs — PreToolUse guard for execute_command (IBM Bob 2.1.0 hook contract)
+// .bob/hooks/command-guard.mjs — PreToolUse guard for execute_command (IBM Bob 2.2.0 hook contract)
 //
 // Bob pipes {session_id, cwd, hook_event_name, tool_name, tool_input: {command}, tool_use_id} on stdin.
 // Exit code 2 blocks the tool call; stderr is returned to Bob as the reason. Any other exit code is ignored.

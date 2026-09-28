@@ -80,8 +80,9 @@ refuses `never` when admin requirements forbid full access.
 judging one planned coding-agent action". Its trust rule is explicit: only user and developer
 messages, AGENTS.md files and answers to `request_user_input` can establish authorization;
 tool outputs, skills, plugin descriptions and the assistant's own text are untrusted. This is the
-closest cousin of Bob's `command-security-model`, and the only one of the five tools that writes
-its trust boundary into the prompt.
+closest cousin of Bob's command-security check — routed since bob-code 2.2.0 through a server-side
+`security` model tier rather than the `command-security-model` flag it used on 2.1.0 — and the only
+one of the five tools that writes its trust boundary into the prompt.
 
 **Exec policy.** Prefix rules in `.rules` files:
 `prefix_rule(pattern=[…], decision="allow")` and `network_rule(…)`. The TUI offers approve,

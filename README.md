@@ -13,8 +13,9 @@ Bob injects about subagents and model choice — and gives you the means to over
 Bob interoperates with the rest of your toolchain and agentic coding stays cost-aware and as
 secure as possible.
 
-Unofficial, not affiliated with IBM. Reverse-engineered from IBM Bob 2.1.0 (`bob-code` 2.1.0, build
-`1.126.0+bob2.1.0.20260827055214`, macOS). Every script checks the installed version and warns
+Unofficial, not affiliated with IBM. Reverse-engineered from IBM Bob 2.2.0 (`bob-code` 2.2.0, build
+`1.126.0+bob2.2.0.20260924155054`, macOS); first written against 2.1.0 and re-verified on 2.2.0 (see
+[what changed](docs/bob-2.1.0-to-2.2.0.md)). Every script checks the installed version and warns
 when it differs.
 
 ## How
