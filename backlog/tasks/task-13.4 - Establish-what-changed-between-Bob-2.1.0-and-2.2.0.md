@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@claude'
 created_date: '2026-09-28 19:46'
-updated_date: '2026-09-28 21:12'
+updated_date: '2026-09-28 21:14'
 labels:
   - 'model:primaire'
 milestone: m-1
@@ -242,6 +242,8 @@ AC #3 : chaque ligne des neuf tableaux porte une colonne Class valant behaviour,
 AC #4 : chaque ligne porte une colonne Evidence nommant un litteral et son verdict, une edition de chaine appariee ou une entree du changelog ; la section Method dit que MISSING sur un nom d export est non concluant et chaque MISSING d export est annote is the export name ; verifie ligne a ligne par le verificateur (deux lignes ou plus par rubrique confrontees aux bundles, huit ecarts corriges).
 AC #5 : section Why the 2.1.0 build was retrieved, and what the diff changed — decision (build recupere depuis l endpoint de product.json), raison, quatre apports du diff, et ce qui changerait avec le build exact des notes (sha1 d8b1130e..., suffixe 20260827055214) : rien dans les conclusions, bruit = un seul litteral de chemin Jenkins de 9 caracteres ; existence de la section verifiee par le verificateur.
 AC #6 : section Facts the 2.1.0 notes assert that this delta neither confirms nor refutes — dix items numerotes (precedence intra-racine et agents_md, layout du prompt par config, choix du modele de securite, tarifs, flags de bob_version.py, matcher de jetons, preset general 25 tours, migration des commandes, dossier non fiable, surface de activate()), transmis par notes datees a TASK-13.1 et TASK-13.2 ; existence et contenu verifies par le verificateur.
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 60 appels API (fable-5-1: 60), 10 290 tokens de sortie, 9 448 779 cache read, 813 299 cache write, ≈ 26,25 USD ≈ 22,60 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Méthode : fenêtre entre le commit précédent (c76d15a, plan validé) et le commit de la tâche (fec4c78) — toute l'activité des transcripts sur cet intervalle, sous-agent d'implémentation et son vérificateur indépendant compris, est imputée à la tâche ; l'analyse de conception (commit c76d15a) n'y est pas. Fenêtre 42 min, temps effectif ≈ 34 min ; les ≈ 8 min de « pauses » (3 écarts > 120 s) sont des passes de l'outil de diff sur les deux bundles de 10 et 14 Mo, donc du traitement, pas de l'attente. Cohérent avec la durée rapportée par l'agent lui-même (38 min, 77 appels d'outils). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Fable (label model:primaire).
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
