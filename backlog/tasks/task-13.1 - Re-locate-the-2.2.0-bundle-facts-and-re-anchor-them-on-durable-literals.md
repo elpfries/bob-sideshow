@@ -4,7 +4,7 @@ title: Re-locate the 2.2.0 bundle facts and re-anchor them on durable literals
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 19:46'
+updated_date: '2026-09-28 20:01'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -33,3 +33,18 @@ What matters is the claims, not the identifiers: the auto-approval gate order an
 - [ ] #5 Every anchor cited in a reference note is a literal that exists in the 2.2.0 bundle, and none is a minified identifier name
 - [ ] #6 The token matcher that `approval_check.py` reimplements is compared against the 2.2.0 code, and the script is corrected if it diverges
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Ce que l'arbitrage de l'utilisateur change pour cette tâche — 2026-09-28 (PRIME sur la description)
+
+Le build 2.1.0 est récupéré (décision consignée dans TASK-13.4), donc la méthode de cette tâche
+change : les faits ne sont pas seulement relocalisés dans 2.2.0, ils sont diffés contre le bundle
+2.1.0 d'origine. Un fait qui a l'air d'avoir bougé peut alors être tranché au lieu de rester
+indéterminé. Attendre le delta de TASK-13.4 avant de commencer : il dit lesquelles des ancres ont
+réellement changé de comportement et lesquelles n'ont perdu que leur nom.
+
+Le critère #5 reste entier quoi qu'il arrive : les ancres citées dans les notes de référence
+doivent exister dans le bundle 2.2.0, et un nom minifié n'est pas une ancre.
+<!-- SECTION:NOTES:END -->
