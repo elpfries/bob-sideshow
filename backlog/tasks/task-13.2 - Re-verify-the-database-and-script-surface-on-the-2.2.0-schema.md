@@ -4,7 +4,7 @@ title: Re-verify the database and script surface on the 2.2.0 schema
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 21:33'
+updated_date: '2026-09-28 21:45'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -80,4 +80,13 @@ Notes transmises par TASK-13.1 (2026-09-28), re-verification des trois notes de 
 4. Schema de la base sous 2.2.0 : la migration 011_key_value_store est deja appliquee et cache featureFlags.v1 (2020 caracteres JSON) ; les quatre autres tables restent byte-identiques (migrations 001 a 010). Reste a verifier si messages.data porte toujours _meta.spend par appel de la meme facon sous 2.2.0.
 5. Modele de securite via routeur : le controle de commande demande desormais le tier interne security a un routeur serveur (POST vers /chat/completions, metadata.model_tier=security), repli local premium-ide si le routeur echoue. Le flag serveur command-security-model existe toujours cote etat IDE mais n est plus lu par le controle ; si le routeur repond bien avec ce meme modele reste une question de base/traffic, pas de bundle.
 6. Compaction : la note injected-rules.md affirme que la compaction utilise le modele de la tache ; ce point n a pas ete re-verifie sur 2.2.0 et reste marque non verifie.
+
+## Trafic 2.2.0 disponible et faits observés dessus — 2026-09-28, session d'orchestration (PRIME sur la description)
+
+Le trafic 2.2.0 existe maintenant dans ~/.bob/db/bob.db (l'utilisateur a lancé deux tâches ; le snapshot 2.1.0 en private/baseline-2.1.0/ était figé avant) : tâches f93b5fd9 (21:27 UTC, « /bob-version »), e860b444 (21:42 UTC, sous-agent explore-premium) et son enfant 22251a4d. Compté par comparaison NUMÉRIQUE des timestamps (created_at en millisecondes ; attention, created_at/1000 > strftime('%s', …) compare un entier à un texte et renvoie toujours faux en SQLite — utiliser created_at > strftime('%s','…')*1000).
+
+Trois observations à vérifier et consigner, qui changent le périmètre des critères :
+1. _meta.spend n'a plus que {cost, contextTokens} sur les appels 2.2.0 (exemple : {"timestamp":1790631481780,"spend":{"cost":0.04271,"contextTokens":21355}}) contre {input, output, cacheRead, cacheWrite, cost, contextTokens, reasoningTokens} sur 2.1.0. Les tokens ne sont plus enregistrés : le tarif unitaire cost/(input+output) ne se MESURE plus, et les vues tokens de bob_telemetry.py sont à traiter en conséquence (afficher l'absence, ne pas inventer). C'est un fait à consigner pour le critère #2, pas un défaut à réparer.
+2. Aucun message n'est stocké sous l'identifiant de la tâche enfant 22251a4d (0 ligne dans messages) ; le transcript du sous-agent est embarqué dans le message tool du parent (82 697 octets). En 2.1.0, les appels des sous-agents étaient rangés sous leur propre tâche (le résumé télémétrie montrait « subagent explore » séparément). Vérifier ce que bob_telemetry.py compte désormais par sous-agent, et le dire.
+3. Le system prompt 2.2.0 stocké (33 145 caractères, tâche f93b5fd9 ; 35 021 pour e860b444) émet toujours les balises de sections : role_definition, investigate_before_answering, engineering_discipline, tool_use, markdown_rules, auto_appended_context, base_rules, available_skills (avec des balises skill imbriquées), user_custom_instructions, project_rules avec agents_md et rule imbriqués. dump_system_prompt.py --list est donc à exécuter sur ces tâches et sa sortie comparée au layout documenté (critère #3).
 <!-- SECTION:NOTES:END -->

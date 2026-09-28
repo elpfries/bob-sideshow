@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@eric.bonkarma'
 created_date: '2026-09-28 19:33'
-updated_date: '2026-09-28 21:35'
+updated_date: '2026-09-28 21:45'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -33,7 +33,7 @@ What matters is the claims, not the identifiers: the auto-approval gate order an
 - [x] #4 The hook payload contract and event set, and the shipped `command-guard.mjs` matcher and exit-code behaviour, are confirmed against 2.2.0
 - [x] #5 Every anchor cited in a reference note is a literal that exists in the 2.2.0 bundle, and none is a minified identifier name
 - [x] #6 The token matcher that `approval_check.py` reimplements is compared against the 2.2.0 code, and the script is corrected if it diverges
-- [ ] #7 templates/agents/explore-premium.md and the custom-agent frontmatter example in injected-rules.md use modelTier, and the template loads on 2.2.0 without the model-not-supported error
+- [x] #7 templates/agents/explore-premium.md and the custom-agent frontmatter example in injected-rules.md use modelTier, and the template loads on 2.2.0 without the model-not-supported error
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -198,6 +198,14 @@ Re-mesure de la facturation et re-verification de messages.data._meta.spend sur 
 Modification de _bobcheck.py, des titres, des docstrings de version (hors perimetre, reserve a TASK-13.3).
 
 Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 116 appels API (sonnet-5 : 97 pour l'agent d'implémentation, fable-5-1 : 19 pour l'orchestration), 34 939 tokens de sortie, 17 756 876 cache read, 325 704 cache write, ≈ 8,44 USD ≈ 7,27 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (b505cb6) et le commit de la tâche (d16cec7), sous-agent compris. Fenêtre 20 min, temps effectif ≈ 18 min, ≈ 2 min de pause (un écart > 120 s, passe de l'outil de diff sur les bundles). Cohérent avec la durée rapportée par l'agent (19,6 min, 109 appels d'outils). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire).
+
+## Critère #7 prouvé par exécution — 2026-09-28, depuis la session d'orchestration
+
+Le template corrigé (modelTier: premium) a été copié dans .bob/agents/explore-premium.md du workspace bob-sideshow (dossier gitignoré) et l'utilisateur a ouvert une tâche NEUVE dans Bob 2.2.0 (build 1.126.0+bob2.2.0.20260924155054). Preuves lues dans ~/.bob/db/bob.db, tâche e860b444 (créée 2026-09-28 21:42:19 UTC) :
+- le system prompt stocké liste « "explore-premium": Explore and analyse the codebase on the premium model (read-only) (read tools, premium model) » entre « explore » et « general » — le parseur 2.2.0 a accepté le frontmatter et résolu le tier ;
+- l'assistant a appelé spawn_subagent avec name "explore-premium" ; une tâche enfant 22251a4d (parent_id = e860b444) a été créée à 21:42:43 UTC et son résultat est revenu dans un message tool de 82 697 octets ;
+- aucune chaîne « not supported » ni « Invalid modelTier » dans les messages de la tâche.
+Un premier essai dans une tâche ouverte AVANT la copie du template (f93b5fd9, 21:27 UTC) avait répondu « il n'existe pas de sous-agent explore-premium » : la liste des agents est figée à l'assemblage du system prompt, au démarrage de la tâche — fait utile pour la note injected-rules.md (à énoncer si elle ne le dit pas déjà, sinon rien).
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
