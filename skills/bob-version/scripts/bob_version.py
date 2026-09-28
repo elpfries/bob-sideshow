@@ -4,6 +4,12 @@
   python3 bob_version.py [--json] [--app PATH_TO_resources/app]
 
 Read-only; Python 3.8+, standard library only.
+
+Server-flag list re-checked on live bob-code 2.2.0 traffic (build 1.126.0+bob2.2.0.20260924155054,
+2026-09-28): command-security-model and summary-model are still pushed (state.vscdb, key_value_store.
+featureFlags.v1) but no longer read by bob-code 2.2.0 for their original purpose; kept in the printed
+list, marked "[pushed, not read by 2.2.0]" rather than removed. The keys 2.2.0's getFlagValue actually
+reads were added to the printed set.
 """
 import argparse
 import datetime as dt
@@ -21,8 +27,18 @@ import _bobcheck  # noqa: E402
 
 HOME = os.path.expanduser("~")
 SYSTEM = platform.system()
+# command-security-model and summary-model are still pushed by the server (seen in state.vscdb and in
+# key_value_store.featureFlags.v1) but bob-code 2.2.0's getFlagValue no longer reads them for their
+# original purpose (docs/bob-2.1.0-to-2.2.0.md section 6: the security check now asks a server router
+# for tier "security" instead). Kept here, marked, rather than dropped, so a re-appearance is visible.
+PUSHED_NOT_READ_2_2_0 = frozenset({"command-security-model", "summary-model"})
 FLAG_KEYS = ("command-security-model", "summary-model", "completion-model", "next-edit-model", "feedback-model",
-             "command-security-enabled")
+             "command-security-enabled",
+             # keys bob-code 2.2.0's getFlagValue reads (verified 2026-09-28 on build
+             # 1.126.0+bob2.2.0.20260924155054, TASK-13.4/TASK-13.2): none of these were in the 2.1.0 list above
+             # except feedback-model.
+             "bob-findings-enabled", "dynamic-context-enabled", "feedback-verification-enabled", "ibm-support-url",
+             "issue-repo-url", "max-monthly-budget-allowance", "review-flow-enabled")
 
 
 def read_json(path):
@@ -119,7 +135,8 @@ def flags_info(ide_folder):
     except Exception:
         return {"path": p}
     return {"path": p, "count": len(cache),
-            "flags": {k: v for k, v in cache.items() if k in FLAG_KEYS or k.startswith("experiment-")}}
+            "flags": {k: v for k, v in cache.items() if k in FLAG_KEYS or k.startswith("experiment-")},
+            "pushedNotReadBy2_2_0": sorted(k for k in cache if k in PUSHED_NOT_READ_2_2_0)}
 
 
 def main():
@@ -158,7 +175,8 @@ def main():
         print(f"bob.db       {db.get('error') or 'absent'}")
     fl = report["serverFlags"].get("flags") or {}
     if fl:
-        print("server flags " + "  ".join(f"{k}={json.dumps(v)}" for k, v in sorted(fl.items())))
+        print("server flags " + "  ".join(f"{k}={json.dumps(v)}" + (" [pushed, not read by 2.2.0]" if k in PUSHED_NOT_READ_2_2_0 else "")
+                                           for k, v in sorted(fl.items())))
     ref = report["reference"]
     print("reference    " + ("MATCH — verified on bob-code " + ref["verifiedExtension"] + " / " + ref["verifiedSchema"]
                              if ref["match"] else "DIFFERENT — " + "; ".join(ref["problems"]) + " — reference notes may be stale"))

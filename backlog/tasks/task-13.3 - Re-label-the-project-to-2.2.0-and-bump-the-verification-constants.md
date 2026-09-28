@@ -4,7 +4,7 @@ title: Re-label the project to 2.2.0 and bump the verification constants
 status: To Do
 assignee: []
 created_date: '2026-09-28 19:34'
-updated_date: '2026-09-28 21:33'
+updated_date: '2026-09-28 21:56'
 labels:
   - 'model:secondaire'
 milestone: m-1
@@ -54,4 +54,21 @@ Notes transmises par TASK-13.1 (2026-09-28), perimetre volontairement non touche
 3. approval_check.py : docstring toujours Would IBM Bob (bob-code 2.1.0) auto-approve this shell command. Le matcher de jetons qu il reimplemente a ete compare a la fonction 2.2.0 (verdict : aucune divergence), donc le script n a pas besoin d etre modifie sur le fond, seulement sur son etiquetage de version.
 4. _bobcheck.py (cinq copies, un seul hash confirme au commit de cette tache) : l avertissement de version qu il affiche (bob-code 2.2.0 installe, verifie sur 2.1.0...) est volontairement laisse tel quel, il est correct tant que VERIFIED_* n a pas ete mis a jour apres re-verification du build. C est cette tache qui doit bumper les constantes VERIFIED_* apres avoir revalide les notes sur le nouveau build.
 5. README et CHANGELOG du depot (non touches par TASK-13.1) : a verifier s ils mentionnent aussi bob-code 2.1.0 ou une version figee a mettre a jour.
+
+Transmission de TASK-13.2 vers TASK-13.3 (verification sur trafic reel 2.2.0, 2026-09-28).
+
+SCRIPTS MODIFIES PAR TASK-13.2 (perimetre etroit, VERIFIED_* non touche):
+1. skills/bob-telemetry/scripts/bob_telemetry.py - docstring toujours: Verified on the bob-code 2.1.0 schema (ligne intacte, VERIFIED_* reste proprietaire de _bobcheck.py); une phrase a ete ajoutee sous cette ligne documentant que sur 2.2.0 _meta.spend est reduit a cost et contextTokens. Code: fonction spend() detecte desormais tokensKnown (presence des cles input/output) et transporte contextTokens; cmd_calls, cmd_tasks, cmd_summary affichent n/a au lieu de 0 pour les colonnes de tokens quand tokensKnown est faux; cmd_calls gagne une colonne ctx.
+2. skills/bob-telemetry/SKILL.md - la ligne d en-tete build 2.1.0 est restee inchangee; une puce a ete ajoutee sous la section When explaining pour signaler que sur 2.2.0 la classe est toujours n/a et le tarif unitaire non mesurable, avec la colonne ctx disponible en remplacement.
+3. skills/bob-version/scripts/bob_version.py - docstring toujours: Read-only; Python 3.8+, standard library only (ligne intacte); une note a ete ajoutee dessous documentant la reverification du 2026-09-28 sur build 1.126.0+bob2.2.0.20260924155054. FLAG_KEYS etendu aux 8 cles que 2.2.0 lit reellement via getFlagValue (bob-findings-enabled, dynamic-context-enabled, feedback-model, feedback-verification-enabled, ibm-support-url, issue-repo-url, max-monthly-budget-allowance, review-flow-enabled), en gardant les 6 cles historiques. command-security-model et summary-model restent affiches mais annotes pushed, not read by 2.2.0 (texte et JSON) au lieu d etre retires.
+
+FAITS DE TELEMETRIE A PORTER AU CHANGELOG (perimetre TASK-13.3):
+- Sur bob-code 2.2.0, _meta.spend des appels LLM ne porte plus que cost et contextTokens (verifie sur les 19 appels du trafic 2.2.0 disponible, sans exception): input, output, cacheRead, cacheWrite, reasoningTokens ont disparu. Le tarif unitaire (Bobcoins par million de tokens, 2.0 standard et 0.833 economy sur 2.1.0, re-mesure confirmee sur le snapshot) ne peut plus etre calcule sur du trafic 2.2.0. Seuls le cout par appel et contextTokens restent disponibles.
+- Le rangement des appels de sous-agents en base (0 message sous l id de la tache sous-agent, transcript complet imbrique dans le champ messages du message tool du parent, avec un _meta.spend agrege sur le message parent egal a la somme des appels internes) est IDENTIQUE entre 2.1.0 et 2.2.0 - verifie directement sur les 4 taches subagent du snapshot 2.1.0 et sur la tache enfant 22251a4d du trafic 2.2.0. Ce n est pas un changement de 2.2.0 malgre l intuition initiale de la note d orchestration; le CHANGELOG ne doit donc pas presenter ceci comme une nouveaute 2.2.0.
+
+DECISION FLAGS SERVEUR A CONFIRMER DANS LE CHANGELOG: command-security-model et summary-model restent pousses par le serveur (vus identiques dans key_value_store.featureFlags.v1 et dans state.vscdb) mais ne sont plus lus par bob-code 2.2.0 pour leur usage d origine (voir docs/bob-2.1.0-to-2.2.0.md section 6). bob_version.py les affiche desormais avec l annotation pushed, not read by 2.2.0 plutot que de les retirer.
+
+POINT POUR LES NOTES DE REFERENCE (proprietaire TASK-13.1, hors perimetre TASK-13.2, signale pour suite eventuelle): skills/bob-agent-rules/reference/injected-rules.md ligne 17 marquait la config de prompt production comme non confirmee et assignait la verification a TASK-13.2. C est fait: dump_system_prompt.py --list sur les deux taches 2.2.0 (f93b5fd9, e860b444) donne la meme liste de sections que le layout default/aquarius documente, sans aucune section boreas (task_execution, when_stuck) ni orion (act_and_iterate, ground_truth, define_done, prove_done). La distinction default versus aquarius reste indiscernable par la seule liste de sections. Le fichier de reference lui-meme n a pas ete modifie (hors perimetre de TASK-13.2).
+
+Aucune donnee personnelle dans cette transmission (pas de chemin /Users, pas de contenu de tache Bob).
 <!-- SECTION:NOTES:END -->

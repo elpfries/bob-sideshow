@@ -23,5 +23,9 @@ When explaining (build 2.1.0):
 - Bob stores no model name; the class is inferred from the unit price — ≈ 2.0 Bobcoins per
   million tokens = standard (`premium-ide`), ≈ 0.833 = economy (`explorer`, used by `explore`
   subagents). Any other rate means billing changed: report it.
+- On bob-code 2.2.0 (checked 2026-09-28 on live traffic), calls no longer carry token counts at all
+  (`_meta.spend` is `{cost, contextTokens}` only), so the class is always `n/a` and the unit price
+  cannot be measured; token columns show `n/a` rather than 0, and the `ctx` column (context tokens
+  for that call) is still available. Bobcoins totals are unaffected.
 
 The script prints titles, commands and paths, never message bodies.

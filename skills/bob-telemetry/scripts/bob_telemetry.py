@@ -5,6 +5,11 @@
                    [--db PATH] [--json]
 
 Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.1.0 schema.
+
+On calls made by bob-code 2.2.0 (checked on live 2.2.0 traffic, 2026-09-28), messages.data._meta.spend
+carries only {cost, contextTokens} — input/output/cacheRead/cacheWrite/reasoningTokens are gone, so the
+unit rate (Bobcoins per million tokens) can no longer be measured per call. token columns show "n/a"
+for those calls instead of 0; Bobcoins totals are unaffected (cost is still recorded per call).
 """
 import argparse
 import collections
@@ -73,9 +78,11 @@ def load(con, since_ms):
 
 def spend(sp):
     g = lambda k: sp.get(k) or 0  # noqa: E731
+    known = ("input" in sp) or ("output" in sp)
     tok = g("input") + g("output")
     return {"input": g("input"), "output": g("output"), "cacheRead": g("cacheRead"), "cacheWrite": g("cacheWrite"),
-            "cost": g("cost"), "rate": (g("cost") / tok * 1e6) if tok else None}
+            "cost": g("cost"), "rate": (g("cost") / tok * 1e6) if tok else None,
+            "tokensKnown": known, "contextTokens": sp.get("contextTokens")}
 
 
 def model_class(rate):
@@ -159,25 +166,30 @@ def cmd_summary(tasks, msgs, attrib, a):
     root_cost = sum((t["costs"] or {}).get("cost", 0) for t in roots)
     calls = list(iter_calls(tasks, msgs))
     call_cost = sum(c["cost"] for c in calls)
-    by = collections.defaultdict(lambda: {"calls": 0, "input": 0, "output": 0, "cost": 0.0})
+    known_calls = [c for c in calls if c["tokensKnown"]]
+    by = collections.defaultdict(lambda: {"calls": 0, "input": 0, "output": 0, "cost": 0.0, "tokensKnown": False})
     for c in calls:
         b = by[(model_class(c["rate"]), c["who"])]
         b["calls"] += 1
         b["input"] += c["input"]
         b["output"] += c["output"]
         b["cost"] += c["cost"]
+        b["tokensKnown"] = b["tokensKnown"] or c["tokensKnown"]
     rows = [{"class": k[0], "who": k[1], **v, "share": f"{(v['cost'] / call_cost * 100) if call_cost else 0:.0f}%"}
             for k, v in sorted(by.items(), key=lambda kv: -kv[1]["cost"])]
     out = {"db": a.db, "latest": ts(max([t["updated_at"] for t in tasks.values()] or [0])), "rootTasks": len(roots),
-           "subagentTasks": len(tasks) - len(roots), "llmCalls": len(calls), "tokensIn": sum(c["input"] for c in calls),
-           "tokensOut": sum(c["output"] for c in calls), "bobcoins": root_cost, "bobcoinsPerCall": call_cost, "byClass": rows}
+           "subagentTasks": len(tasks) - len(roots), "llmCalls": len(calls), "tokensIn": sum(c["input"] for c in known_calls),
+           "tokensOut": sum(c["output"] for c in known_calls), "callsWithoutTokens": len(calls) - len(known_calls),
+           "bobcoins": root_cost, "bobcoinsPerCall": call_cost, "byClass": rows}
     if a.json:
         print(json.dumps(out, indent=2, ensure_ascii=False))
         return
     print(f"{a.db} · latest {out['latest']} · {len(roots)} root tasks, {out['subagentTasks']} subagents · "
-          f"{len(calls)} LLM calls · {out['tokensIn']:,} tokens in / {out['tokensOut']:,} out")
+          f"{len(calls)} LLM calls · {out['tokensIn']:,} tokens in / {out['tokensOut']:,} out"
+          + (f" ({out['callsWithoutTokens']} calls without token counts, excluded)" if out["callsWithoutTokens"] else ""))
     print(f"Bobcoins {root_cost:.4f}" + ("" if abs(root_cost - call_cost) < 1e-6 else f"  (per-call sum {call_cost:.4f})"))
-    table([{"class": r["class"], "who": r["who"], "calls": r["calls"], "in": f"{r['input']:,}", "out": f"{r['output']:,}",
+    table([{"class": r["class"], "who": r["who"], "calls": r["calls"],
+            "in": f"{r['input']:,}" if r["tokensKnown"] else "n/a", "out": f"{r['output']:,}" if r["tokensKnown"] else "n/a",
             "Bobcoins": f"{r['cost']:.4f}", "share": r["share"]} for r in rows],
           ["class", "who", "calls", "in", "out", "Bobcoins", "share"])
 
@@ -185,7 +197,9 @@ def cmd_summary(tasks, msgs, attrib, a):
 def cmd_tasks(tasks, msgs, attrib, a):
     own = collections.Counter(c["task"] for c in iter_calls(tasks, msgs) if c["who"] == "agent")
     rows = [{"task": t["id"][:8], "type": t["task_type"], "status": t["status"], "created": ts(t["created_at"])[5:16],
-             "calls": own[t["id"]], "in": f"{(t['costs'] or {}).get('input', 0):,}", "out": f"{(t['costs'] or {}).get('output', 0):,}",
+             "calls": own[t["id"]],
+             "in": f"{(t['costs'] or {}).get('input', 0):,}" if "input" in (t["costs"] or {}) else "n/a",
+             "out": f"{(t['costs'] or {}).get('output', 0):,}" if "output" in (t["costs"] or {}) else "n/a",
              "Bobcoins": f"{(t['costs'] or {}).get('cost', 0):.4f}",
              "title": (t.get("title") or t.get("first_message") or "").strip().replace("\n", " ")[:40]} for t in tasks.values()]
     if a.json:
@@ -196,13 +210,15 @@ def cmd_tasks(tasks, msgs, attrib, a):
 
 
 def cmd_calls(tasks, msgs, attrib, a):
-    rows = [{"time": ts(c["ts"])[5:], "task": c["task"][:8], "who": c["who"], "in": f"{c['input']:,}", "cacheR": f"{c['cacheRead']:,}",
-             "cacheW": f"{c['cacheWrite']:,}", "out": f"{c['output']:,}", "Bobcoins": f"{c['cost']:.4f}",
-             "rate/M": "-" if c["rate"] is None else f"{c['rate']:.3f}", "class": model_class(c["rate"])}
+    def col(c, k):
+        return f"{c[k]:,}" if c["tokensKnown"] else "n/a"
+    rows = [{"time": ts(c["ts"])[5:], "task": c["task"][:8], "who": c["who"], "in": col(c, "input"), "cacheR": col(c, "cacheRead"),
+             "cacheW": col(c, "cacheWrite"), "out": col(c, "output"), "ctx": f"{c['contextTokens']:,}" if c.get("contextTokens") is not None else "-",
+             "Bobcoins": f"{c['cost']:.4f}", "rate/M": "-" if c["rate"] is None else f"{c['rate']:.3f}", "class": model_class(c["rate"])}
             for c in sorted(iter_calls(tasks, msgs), key=lambda c: c["ts"] or 0) if not a.task or c["task"].startswith(a.task)]
     print(json.dumps(rows, indent=2) if a.json else "", end="")
     if not a.json:
-        table(rows, ["time", "task", "who", "in", "cacheR", "cacheW", "out", "Bobcoins", "rate/M", "class"])
+        table(rows, ["time", "task", "who", "in", "cacheR", "cacheW", "out", "ctx", "Bobcoins", "rate/M", "class"])
 
 
 def cmd_tools(tasks, msgs, attrib, a):
