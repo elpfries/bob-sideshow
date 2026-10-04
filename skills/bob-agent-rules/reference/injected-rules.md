@@ -117,9 +117,15 @@ key in the frontmatter now throws `"model" is not supported in <file>, use "mode
 silently accepted and ignored as on 2.1.0; `modelTier:` is validated against exactly `fast, premium, ultra, explorer`
 (`Invalid modelTier "<value>" in <file>. Valid values: fast, premium, ultra, explorer`). All other fields are
 unchanged (anchors `allowForkContext`, `denyTools`, `rawPrompt`, `maxTurns` IDENTICAL; `groups` default array and
-`## Output Constraints` split both confirmed present). This breaks the shipped
-`skills/bob-override-rules/templates/agents/explore-premium.md`, fixed alongside this note (see acceptance
-criterion #7 in TASK-13.1) — Bob's actual loading of the fixed template could not be exercised from here.
+`## Output Constraints` split both confirmed present). This broke the shipped
+`skills/bob-override-rules/templates/agents/explore-premium.md`, fixed alongside this note; the fixed file was then
+loaded by a real bob-code 2.2.0 task (same build): it appeared in the stored system prompt's agent list as
+`"explore-premium": … (read tools, premium model)` and `spawn_subagent` ran it as a child task.
+
+**The agent list is assembled once, when the task starts** (observed on bob-code 2.2.0, build
+`1.126.0+bob2.2.0.20260924155054`, from two stored prompts): an agent file added to `.bob/agents/` after a task was
+opened is not seen by that task — Bob answers that the type does not exist — and only a new task picks it up. Test
+custom agents in a fresh task, not in the one you were already in.
 
 ## Model choice
 

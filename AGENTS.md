@@ -10,6 +10,8 @@
   `node --check skills/bob-override-rules/templates/hooks/command-guard.mjs`, and run each script
   against a real installation.
 - No personal data in examples or fixtures.
+- Releasing: date the CHANGELOG section, annotated tag `vX.Y` on that commit, `gh release create vX.Y`
+  with the section as notes. A pushed tag never moves — work landing after it goes in the next section.
 
 ## Development tooling (not shipped)
 
