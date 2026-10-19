@@ -71,3 +71,31 @@ mesurée). Enseignements chiffrés, à réutiliser pour estimer la suite :
   25 min pour 8. Citer le temps effectif.
 - **Compter un arrêt de chaîne par critère qui exige la machine de
   l'utilisateur**, et regrouper ces critères pour n'en faire qu'un.
+
+## Hors milestone — TASK-16 : re-vérification sur Bob 2.2.3 (close le 2026-10-19)
+
+Chaîne conduite depuis Claude Code / Fable 5.1 (session principale) ; sous-agents sur Sonnet
+(`model:secondaire`). Coûts = équivalent tarif liste API (script `backfill.py`, taux de repli
+1 USD = 0,8610 EUR), pas une facture. Le coût inclut l'orchestration.
+
+| Tâche | Nature | Modèle | Coût | Temps effectif |
+|---|---|---|---|---|
+| (hors tâche) diff 2.2.0→2.2.1→2.2.3, création de TASK-16 et ses deux sous-tâches | relevé + rédaction backlog, sur deux sessions (2026-10-05, 2026-10-19) | Fable (session) | non mesuré (hors fenêtre de commit) | ≈ 20 min |
+| TASK-16.1 — baselines 2.2.1/2.2.3 avec webview, récupération 2.2.0/2.2.1 depuis le serveur de mise à jour (lecture Range HTTP), étape 2 amendée | outillage privé + vérificateur indépendant | Sonnet | 3,59 EUR | 22 min |
+| TASK-16.2 — étapes 6-8, bump `VERIFIED_*`, 13 fichiers ré-étiquetés, CHANGELOG 0.4 | ré-étiquetage guidé par une règle écrite dans le brief | Sonnet | 3,16 EUR (dont un lancement coupé par une erreur réseau, sans travail refait) | 16 min |
+| (hors tâche) mesures, contrôles à froid (`install.sh`, cinq scripts), clôture du parent | orchestration | Fable (session) | ≈ 1 EUR | ≈ 5 min |
+| **Total** | 2 sous-tâches + parente + orchestration | | **≈ 7,8 EUR** | **≈ 63 min** |
+
+Estimation annoncée au lancement : 5–15 EUR, 20–35 min effectives pour les deux sous-tâches
+(d'après les lignes Sonnet de m-1). Réalisé : 6,75 EUR et 38 min pour les deux — dans la
+fourchette de coût, au-dessus en temps à cause de la récupération réseau de 16.1.
+
+Enseignements chiffrés :
+
+- **Un build Bob sans changement de bundle coûte quand même ~7 EUR à re-vérifier** : le coût
+  est dans la preuve et le ré-étiquetage, pas dans le delta.
+- **Un critère qui exige la machine de l'utilisateur** (lancer une tâche Bob sur le nouveau
+  build) a de nouveau arrêté la chaîne une fois ; posé comme question unique avant le premier
+  agent, il n'a rien coûté en attente.
+- **Une coupure réseau d'un agent avant toute écriture coûte ~1 EUR** (le brief relu par un
+  agent neuf) et zéro travail refait, si l'arbre est inventorié avant la relance.
