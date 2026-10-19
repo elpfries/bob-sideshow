@@ -6,10 +6,12 @@
 Read-only; Python 3.8+, standard library only.
 
 Server-flag list re-checked on live bob-code 2.2.0 traffic (build 1.126.0+bob2.2.0.20260924155054,
-2026-09-28): command-security-model and summary-model are still pushed (state.vscdb, key_value_store.
-featureFlags.v1) but no longer read by bob-code 2.2.0 for their original purpose; kept in the printed
-list, marked "[pushed, not read by 2.2.0]" rather than removed. The keys 2.2.0's getFlagValue actually
-reads were added to the printed set.
+2026-09-28), and again on live bob-code 2.2.3 traffic (build 1.126.0+bob2.2.3.20261014125159,
+2026-10-19, TASK-16.2): command-security-model and summary-model are still pushed (state.vscdb,
+key_value_store.featureFlags.v1) but no longer read by bob-code 2.2.3 for their original purpose;
+kept in the printed list, marked "[pushed, not read by 2.2.3]" rather than removed. The keys
+2.2.0's getFlagValue actually reads were added to the printed set, and the same set was seen
+unchanged on the 2.2.3 install.
 """
 import argparse
 import datetime as dt
@@ -31,6 +33,8 @@ SYSTEM = platform.system()
 # key_value_store.featureFlags.v1) but bob-code 2.2.0's getFlagValue no longer reads them for their
 # original purpose (docs/bob-2.1.0-to-2.2.0.md section 6: the security check now asks a server router
 # for tier "security" instead). Kept here, marked, rather than dropped, so a re-appearance is visible.
+# Confirmed unchanged on the live bob-code 2.2.3 install (2026-10-19, TASK-16.2): same two flags still
+# pushed, still unread.
 PUSHED_NOT_READ_2_2_0 = frozenset({"command-security-model", "summary-model"})
 FLAG_KEYS = ("command-security-model", "summary-model", "completion-model", "next-edit-model", "feedback-model",
              "command-security-enabled",
@@ -175,7 +179,7 @@ def main():
         print(f"bob.db       {db.get('error') or 'absent'}")
     fl = report["serverFlags"].get("flags") or {}
     if fl:
-        print("server flags " + "  ".join(f"{k}={json.dumps(v)}" + (" [pushed, not read by 2.2.0]" if k in PUSHED_NOT_READ_2_2_0 else "")
+        print("server flags " + "  ".join(f"{k}={json.dumps(v)}" + (" [pushed, not read by 2.2.3]" if k in PUSHED_NOT_READ_2_2_0 else "")
                                            for k, v in sorted(fl.items())))
     ref = report["reference"]
     print("reference    " + ("MATCH — verified on bob-code " + ref["verifiedExtension"] + " / " + ref["verifiedSchema"]

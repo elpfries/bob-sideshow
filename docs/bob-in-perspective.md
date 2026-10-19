@@ -7,7 +7,7 @@ Claude Code, OpenCode, Codex and Kimi Code that bob-sideshow asks of IBM Bob:
 [kimi-code-vs-bob.md](kimi-code-vs-bob.md). This one turns the comparison around and asks what
 Bob does better, where it lags, and what that says about bob-sideshow itself.
 
-Builds: IBM Bob 2.2.0; Cursor 3.19.13 with agent runtime 2026.09.15; Claude Code 2.1.274;
+Builds: IBM Bob 2.2.3 (bob-code unchanged since 2.2.0, see CHANGELOG 0.4); Cursor 3.19.13 with agent runtime 2026.09.15; Claude Code 2.1.274;
 OpenCode 1.18.21; Codex CLI 0.154.0-alpha.6.2; Kimi Code extension 0.7.5. Same method
 everywhere: installed files, local databases, settings; no source code, no network capture.
 Codex and Kimi Code were surveyed before any session had run, so their findings come from the
@@ -96,7 +96,7 @@ the user set.
 
 ## Side-by-side
 
-| Question | Bob 2.2.0 | Cursor | Claude Code | OpenCode | Codex | Kimi Code |
+| Question | Bob 2.2.3 | Cursor | Claude Code | OpenCode | Codex | Kimi Code |
 |---|---|---|---|---|---|---|
 | System prompt readable locally | stored per task | no (server) | in binary | in binary, per model | in binary, per model | in bundle, replaceable by `SYSTEM.md` |
 | Cost per call, offline | yes, price only | no | tokens + model, no price | yes, price + model | tokens; price from server | tokens + model; price if provider sends it |

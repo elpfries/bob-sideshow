@@ -281,3 +281,11 @@ it: `Default: do the work yourself`, `take precedence over your training default
 `hookSpecificOutput`, `allowedEnvVars`, `web_fetch`, `When true, runs the command in the background`,
 `autoCompact`, `promptConfigPath`, `RequiredExtensions`, `key_value_store`, `Extension activated`,
 `bob-code.sendMessageWithHiddenPrompt`. None of them is an export name.
+
+**2026-10-19 update (TASK-16/TASK-16.2):** Bob auto-updated twice since this page was written, to
+2.2.1 and then 2.2.3 (2.2.2 was never observed installed). Re-running this page's anchor list against
+both builds found exactly one byte-level change anywhere in `extension.js`, a Jenkins workspace path
+used only in development mode — `bob-code` itself (prompts, approval engine, tool set, webview) is
+otherwise unchanged since 2.2.0. See [CHANGELOG](../CHANGELOG.md) 0.4 for the full verdict and
+`private/SOURCES.md` ("Verdicts 2.2.0 -> 2.2.1 -> 2.2.3") for the proof; this page's own content is not
+rewritten, since nothing it describes changed.

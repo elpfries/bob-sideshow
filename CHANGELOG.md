@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.4 — 2026-10-19
+
+Re-verified on IBM Bob 2.2.3. Nothing in Bob changed that this project needed to say differently;
+the labels did.
+
+- **Re-verified on IBM Bob 2.2.3** (`bob-code` 2.2.3, build `1.126.0+bob2.2.3.20261014125159`; database
+  schema still `011_key_value_store`, 11 migrations). Bob auto-updated in place twice since the 0.3
+  release, 2.2.0 → 2.2.1 (2026-10-05) → 2.2.3 (2026-10-14); 2.2.2 was never observed installed on this
+  machine.
+  - **`bob-code` itself is unchanged since 2.2.0, except one development-only string.**
+    `extension.js` is byte-identical between 2.2.1 and 2.2.3 (same SHA-1,
+    `6062c88fb39bb33a7b1f24f8d2cf08911e8dcac5`), and differs from 2.2.0 by exactly 34 bytes — one
+    Jenkins workspace-path string used only when Bob is built in development mode
+    (`BOB_IDE_EXTERNAL_PKG_USER` → `BOB_IDE_EXTERNAL`), confirmed by `bundle_diff.py anchors` against
+    both the 102-anchor and the 46-durable-anchor list (46/46 landmarks present on all three builds;
+    the single `CHANGED` anchor both runs agree on is that one string). `translations/en.json` and
+    every file under the webview's `dist/web/assets/` (691 files) are identical, hash for hash,
+    across 2.2.0, 2.2.1 and 2.2.3.
+  - **What moved between 2.2.0 and 2.2.3 lives in the IDE shell and in Remote-SSH, not in
+    `bob-code`.** The public IBM changelog attributes 2.2.1 to an internal bug fix and 2.2.2/2.2.3 to
+    Remote-SSH (csh/tcsh shell support, SSH server install); `product.json`'s own integrity hashes
+    confirm the moving parts are the VS Code shell files around the extension, not the extension
+    itself.
+  - **Confirmed on a real task run by the 2.2.3 build** (task `9ad66ac1`, 4 priced LLM calls): the
+    stored system prompt still has the same 12 sections and 8 guidance blocks as the 2.2.0-era tasks
+    (`f93b5fd9`, `e860b444`), with no `boreas`/`orion` sections; `_meta.spend` on every call is still
+    `{cost, contextTokens}` only, so the per-call unit price (Bobcoins/M tokens) still cannot be
+    measured, same as on 2.2.0; the server-pushed flag set (including the two flags marked
+    `[pushed, not read]`) is unchanged.
+  - No reference note needed a content correction: every fact that steps 1–7 of the re-verification
+    procedure could check held unchanged. `private/SOURCES.md` records the full method and the two
+    steps' outputs ("Verdicts 2.2.0 → 2.2.1 → 2.2.3" and "Steps 6-7 on 2.2.3 (TASK-16.2)").
+  - **What changed in bob-sideshow**: every published file that stated "verified on 2.2.0" or cited
+    that build as its verification build now says 2.2.3 and build
+    `1.126.0+bob2.2.3.20261014125159`, including the `[pushed, not read by …]` labels in
+    `bob-version`. Facts that were not re-checked by this task (the 2.1.0-era billing rates in
+    `bob-agent-rules`, `rule_locations.py`'s plugin-trust logic) keep their earlier label, unchanged.
+    `VERIFIED_EXTENSION` is `2.2.3` and `VERIFIED_SCHEMA` is still `011_key_value_store` in the five
+    copies of `_bobcheck.py`.
+- The 2.2.0 → 2.2.1 → 2.2.3 build baselines (including the webview, 691 files, which 0.3's baselines
+  had skipped) are stored under `private/` for the next re-verification; `private/` is gitignored, so
+  they ship with no release.
+
 ## 0.3 — 2026-09-29
 
 Verified on IBM Bob 2.2.0, and ready for the next Bob after it.

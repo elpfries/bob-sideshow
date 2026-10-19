@@ -4,13 +4,15 @@
   bob_telemetry.py summary|tasks|calls|tools|security|changes|context [--task PREFIX] [--since YYYY-MM-DD]
                    [--db PATH] [--json]
 
-Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.2.0 schema
-(011_key_value_store); re-verified 2026-09-28 on live bob-code 2.2.0 traffic.
+Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.2.3 schema
+(011_key_value_store); re-verified 2026-09-28 on live bob-code 2.2.0 traffic, and again 2026-10-19 on
+live bob-code 2.2.3 traffic (task 9ad66ac1, TASK-16.2) — same schema, same call shape.
 
-On calls made by bob-code 2.2.0 (checked on live 2.2.0 traffic, 2026-09-28), messages.data._meta.spend
-carries only {cost, contextTokens} — input/output/cacheRead/cacheWrite/reasoningTokens are gone, so the
-unit rate (Bobcoins per million tokens) can no longer be measured per call. token columns show "n/a"
-for those calls instead of 0; Bobcoins totals are unaffected (cost is still recorded per call).
+On calls made by bob-code 2.2.0 (checked on live 2.2.0 traffic, 2026-09-28) and bob-code 2.2.3 (checked
+on live 2.2.3 traffic, 2026-10-19), messages.data._meta.spend carries only {cost, contextTokens} —
+input/output/cacheRead/cacheWrite/reasoningTokens are gone, so the unit rate (Bobcoins per million
+tokens) can no longer be measured per call. token columns show "n/a" for those calls instead of 0;
+Bobcoins totals are unaffected (cost is still recorded per call).
 """
 import argparse
 import collections

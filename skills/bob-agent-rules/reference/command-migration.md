@@ -1,4 +1,4 @@
-# Command-to-skill migration — bob-code 2.2.0
+# Command-to-skill migration — bob-code 2.2.3
 
 Skills appearing in `.bob/skills/` that nobody created, coming back after every deletion.
 Nothing to do with `/init`, which only writes `AGENTS.md` and `.bob/rules-<mode>/AGENTS.md` — confirmed unchanged
@@ -7,7 +7,9 @@ both builds — the `/init` prompt is byte-identical).
 
 Re-verified against the same 2.2.0 build, using `docs/bob-2.1.0-to-2.2.0.md` and a direct read of the migrator
 class (its own name is gone by CommonJS→ESM bundling — never cited here — but every glob, path and message below
-was re-read at the call site and confirmed present).
+was re-read at the call site and confirmed present). Re-verified again on bob-code 2.2.3, build
+`1.126.0+bob2.2.3.20261014125159` (TASK-16.2): `extension.js` is byte-identical to the 2.2.0 one, so every claim
+below holds unchanged by bundle identity (`private/SOURCES.md` "Verdicts 2.2.0 -> 2.2.1 -> 2.2.3").
 
 ## What runs
 

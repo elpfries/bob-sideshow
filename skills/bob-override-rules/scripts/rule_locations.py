@@ -6,6 +6,10 @@
 Read-only; standard library only. Folders and precedence reverse-engineered from bob-code 2.2.0,
 build 1.126.0+bob2.2.0.20260924155054 — docs/bob-2.1.0-to-2.2.0.md section 2 and the project_rules
 section of skills/bob-agent-rules/reference/injected-rules.md, both re-verified on that build.
+Re-verified on bob-code 2.2.3, build 1.126.0+bob2.2.3.20261014125159 (TASK-16.2): the installed
+extension.js is byte-identical to the 2.2.0 one on every anchor this script relies on, confirmed by
+bundle identity rather than re-reading the function (private/SOURCES.md "Verdicts 2.2.0 -> 2.2.1 ->
+2.2.3").
 
 Each rule root (workspace `.bob/` and global `~/.bob/`) also reads every directory (or symlink)
 under its sibling `plugins/` folder, sorted by name, for the same `rules-<mode>/` and `rules/`

@@ -143,7 +143,7 @@ model evaluates the policy; Haiku unless a model is named) and `http`. A hook an
 (`permissionDecision`, `permissionDecisionReason`, `updatedInput`, `additionalContext`,
 `continue`, `stopReason`, `systemMessage`) or with exit code 2, whose meaning depends on the event:
 block the tool call and show stderr to the model (PreToolUse), stop the agentic loop (Stop),
-erase the prompt (UserPromptSubmit). Bob has seven events on 2.2.0 (JSON replies, HTTPS handlers,
+erase the prompt (UserPromptSubmit). Bob has seven events on 2.2.3 (JSON replies, HTTPS handlers,
 the same block/cannot-block exit-code split); Cursor has 22 events; Claude Code has 21 and the
 richest reply format. The binary also knows Cursor's
 `~/.cursor/hooks.json` and `.cursor/hooks.json` paths, for import.

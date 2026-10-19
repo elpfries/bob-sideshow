@@ -130,7 +130,7 @@ and slash commands into skills; Bob does the opposite conversion silently at eve
 **Rules**: same answer as for Bob, a Markdown file in the right folder, and the same caveat:
 rules are instructions, not enforcement.
 
-**Hooks** are where Cursor is still ahead. Bob has seven events on 2.2.0 (`SessionStart`,
+**Hooks** are where Cursor is still ahead. Bob has seven events on 2.2.3 (`SessionStart`,
 `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PreCompact`, `PostCompact`, `Stop`), with JSON
 replies and HTTPS handlers new on this build. Cursor has 22 events:
 before and after a shell command, before and after an MCP call, before reading a file, after

@@ -1,4 +1,4 @@
-# Approvals in IBM Bob — bob-code 2.2.0
+# Approvals in IBM Bob — bob-code 2.2.3
 
 From `dist/extension.js` (`shouldAutoApprove`, `validateToolExecution`, `_alwaysAllowedTools`, `requiresSecurityApproval`,
 `isBobHomeWrite`, hook runner) and the webviews. Re-verified against bob-code 2.2.0, build
@@ -6,7 +6,10 @@ From `dist/extension.js` (`shouldAutoApprove`, `validateToolExecution`, `_always
 is a literal confirmed present in that 2.2.0 build (prompt text, a settings key, a message, or a method/object-key
 name — never a CommonJS export name). `ApprovalEngine` and `assessCommandSecurity` were bob-code 2.1.0 export names
 only, gone from 2.2.0 by the CommonJS→ESM rebuild, not by behaviour; `getCommands` is an unrelated command-palette
-method (`bob-code.openSettings` and friends) and was never evidence for this file.
+method (`bob-code.openSettings` and friends) and was never evidence for this file. Re-verified again on bob-code
+2.2.3, build `1.126.0+bob2.2.3.20261014125159` (TASK-16.2): `extension.js` is byte-identical to the 2.2.0 one on
+every anchor below, so every claim on this page holds unchanged by bundle identity, not by re-reading the
+function (`private/SOURCES.md` "Verdicts 2.2.0 -> 2.2.1 -> 2.2.3").
 
 ## Auto-approval decision (`shouldAutoApprove`, in this order)
 

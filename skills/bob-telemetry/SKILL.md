@@ -17,15 +17,16 @@ description: Use when the user asks what IBM Bob consumed or did — Bobcoins, t
 | `changes` | files Bob edited |
 | `context` | what fills the context window |
 
-When explaining (build 2.2.0):
+When explaining (build 2.2.3):
 - `cost` is in Bobcoins.
 - A root task's cost includes its subagents, its tokens do not: never add parent and subagent rows.
 - Bob stores no model name; the class is inferred from the unit price — ≈ 2.0 Bobcoins per
   million tokens = standard (`premium-ide`), ≈ 0.833 = economy (`explorer`, used by `explore`
   subagents). Any other rate means billing changed: report it.
-- On bob-code 2.2.0 (checked 2026-09-28 on live traffic), calls no longer carry token counts at all
-  (`_meta.spend` is `{cost, contextTokens}` only), so the class is always `n/a` and the unit price
-  cannot be measured; token columns show `n/a` rather than 0, and the `ctx` column (context tokens
-  for that call) is still available. Bobcoins totals are unaffected.
+- On bob-code 2.2.0 (checked 2026-09-28 on live traffic) and bob-code 2.2.3 (checked 2026-10-19 on
+  live traffic, task 9ad66ac1), calls no longer carry token counts at all (`_meta.spend` is
+  `{cost, contextTokens}` only), so the class is always `n/a` and the unit price cannot be measured;
+  token columns show `n/a` rather than 0, and the `ctx` column (context tokens for that call) is
+  still available. Bobcoins totals are unaffected.
 
 The script prints titles, commands and paths, never message bodies.

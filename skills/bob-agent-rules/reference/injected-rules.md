@@ -1,9 +1,12 @@
-# Rules Bob injects — bob-code 2.2.0
+# Rules Bob injects — bob-code 2.2.3
 
 Short excerpts; `dump_system_prompt.py` prints the full text of your own prompt.
 
 Re-verified against bob-code 2.2.0, build `1.126.0+bob2.2.0.20260924155054`, using the bundle-diff evidence in
-`docs/bob-2.1.0-to-2.2.0.md`; anchors below are literals confirmed present in that build.
+`docs/bob-2.1.0-to-2.2.0.md`; anchors below are literals confirmed present in that build. Re-verified again on
+bob-code 2.2.3, build `1.126.0+bob2.2.3.20261014125159` (TASK-16.2): `extension.js` is byte-identical to the
+2.2.0 one, so every anchor claim below holds unchanged by bundle identity (`private/SOURCES.md` "Verdicts
+2.2.0 -> 2.2.1 -> 2.2.3").
 
 ## Prompt layout
 
@@ -14,10 +17,11 @@ the longest prefix match of the model id's `provider/family/version`, falling ba
 unchanged; `boreas` inserts `task_execution` after `investigate_before_answering` and `when_stuck` after `tool_use`;
 `orion` inserts `act_and_iterate`, `ground_truth`, `define_done`, `prove_done` after `investigate_before_answering`
 (all four tags MISSING in 2.1.0, direct read of the registry). Which family each codename resolves to cannot be
-read locally. Confirmed on two bob-code 2.2.0 tasks (`f93b5fd9`, `e860b444`, TASK-13.2, 2026-09-28):
-`dump_system_prompt.py --list` on both gives the same section list as `default`/`aquarius` above, with no
-`task_execution`/`when_stuck` (`boreas`) or `act_and_iterate`/`ground_truth`/`define_done`/`prove_done` (`orion`)
-sections. `default` and `aquarius` stay indistinguishable from the section list alone.
+read locally. Confirmed on two bob-code 2.2.0 tasks (`f93b5fd9`, `e860b444`, TASK-13.2, 2026-09-28), and again on
+a bob-code 2.2.3 task (`9ad66ac1`, TASK-16.2, 2026-10-19): `dump_system_prompt.py --list` gives the same section
+list as `default`/`aquarius` above on all three, with no `task_execution`/`when_stuck` (`boreas`) or
+`act_and_iterate`/`ground_truth`/`define_done`/`prove_done` (`orion`) sections. `default` and `aquarius` stay
+indistinguishable from the section list alone.
 
 `role_definition` · `investigate_before_answering` · `engineering_discipline` · `tool_use` · `markdown_rules` ·
 `auto_appended_context` · `base_rules` · `available_skills` · `user_custom_instructions` · **`project_rules`** ·

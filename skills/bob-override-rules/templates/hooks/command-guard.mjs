@@ -1,8 +1,9 @@
-// .bob/hooks/command-guard.mjs — PreToolUse guard for execute_command (IBM Bob 2.2.0 hook contract)
+// .bob/hooks/command-guard.mjs — PreToolUse guard for execute_command (IBM Bob 2.2.3 hook contract)
 //
 // Bob pipes {session_id, cwd, hook_event_name, tool_name, tool_input: {command}, tool_use_id} on stdin.
 // Exit code 2 blocks the tool call; stderr is returned to Bob as the reason. Any other exit code is ignored.
-// Still valid on bob-code 2.2.0 (build 1.126.0+bob2.2.0.20260924155054): 2.2.0 also accepts a JSON object on
+// Still valid on bob-code 2.2.3 (build 1.126.0+bob2.2.3.20261014125159; unchanged since 2.2.0, see
+// CHANGELOG 0.4): 2.2.0 also accepts a JSON object on
 // stdout (hookSpecificOutput.updatedInput, permissionDecision, additionalContext) for finer-grained PreToolUse
 // control, but this script deliberately keeps the simpler stderr + exit 2 contract, which Bob still honours
 // unchanged. Register it in .bob/settings.json (see settings.hooks.json). Test without Bob:
