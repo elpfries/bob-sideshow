@@ -7,7 +7,7 @@ status: Done
 assignee:
   - '@eric.bonkarma'
 created_date: '2026-10-19 08:18'
-updated_date: '2026-10-19 09:28'
+updated_date: '2026-10-19 09:32'
 labels:
   - 'model:secondaire'
 dependencies:
@@ -77,6 +77,8 @@ AC #3 : sorties collees dans cette tache (section ci-dessus "les cinq scripts li
 AC #4 : grep avant/apres colle dans les notes d'implementation precedentes (liste nommee des 13 fichiers relabellises et des etiquettes 2.2.0 gardees avec leur raison) ; verifie par une relecture de `grep -rn "verified on|vérifié sur|20260924155054|20261014125159" skills README.md docs` apres les edits (sortie collee dans les notes), qui montre les citations restantes et classe chacune (historique vs non re-verifiee).
 AC #5 : le texte de la section CHANGELOG.md "## 0.4 -- 2026-10-19" est dans le fichier commite ; sa presence et son emplacement au-dessus de "## 0.3" sont verifiables par `head -40 CHANGELOG.md`.
 AC #6 : `python3 -m py_compile skills/*/scripts/*.py` -> code retour 0, aucune sortie ; `node --check skills/bob-override-rules/templates/hooks/command-guard.mjs` -> code retour 0, aucune sortie (les deux commandes executees et leur code de retour observe dans cette session).
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 57 appels API (sonnet-5 : 52, fable-5-1 : 3, synthétiques : 2), 16 888 tokens de sortie, 7 040 366 cache read, 215 700 cache write, ≈ 3,67 USD ≈ 3,16 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (a0d9bc9) et le commit de la tâche (26d9fa6). Fenêtre 32 min, temps effectif ≈ 16 min, pauses ≈ 16 min : la fenêtre couvre un premier lancement d'agent coupé par une erreur réseau avant toute écriture (aucun travail refait, arbre vérifié propre avant relance), puis l'agent Sonnet qui a livré (10,6 min selon l'outil Agent, 98 appels d'outils). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire). Contrôles refaits depuis la session principale après le commit : les cinq scripts livrés exécutés contre l'installation 2.2.3 sans avertissement (bob_version.py : reference MATCH), shasum des cinq _bobcheck.py = d40c5ea921c2 unique, py_compile et node --check OK, aucune donnée personnelle dans les fichiers livrés.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
