@@ -7,7 +7,7 @@ status: Done
 assignee:
   - '@claude'
 created_date: '2026-10-19 08:18'
-updated_date: '2026-10-19 08:55'
+updated_date: '2026-10-19 08:58'
 labels:
   - 'model:secondaire'
 dependencies: []
@@ -80,6 +80,8 @@ AC #2 : private/baseline-2.2.0/app/.../dist/web/assets/ et private/baseline-2.2.
 AC #3 : private/SOURCES.md étape 2 de "Re-verifying on a new build" liste dist/web/assets avec sa raison et la convention web-assets.sha256 ; nouvelle sous-section "Verdicts 2.2.0 → 2.2.1 → 2.2.3" (ligne ~88). Chiffres rejoués et confirmés à l'identique par le vérificateur indépendant : bundle_tools.py --landmarks -> 46/46 sur l'installé et sur baseline-2.2.0/app et baseline-2.2.1/app (--app) ; bundle_diff.py anchors avec anchors.txt (102) -> 19 MISSING in both / 36 IDENTICAL / 46 SAME top-level string / 1 CHANGED ; avec landmarks.txt (46) -> 0 MISSING / 20 IDENTICAL / 25 SAME top-level string / 1 CHANGED ; bundle_diff.py anchor "Extension activated" -> CHANGED, 1 édition réelle, chemin Jenkins BOB_IDE_EXTERNAL_PKG_USER vers BOB_IDE_EXTERNAL.
 
 AC #4 : git status rejoué par le vérificateur -> seul le fichier de tâche backlog TASK-16.1 modifié, rien sous private/ (gitignoré). grep -rn "$HOME|ericfries" private/baseline-*/README.md private/SOURCES.md -> vide (rejoué par le vérificateur). grep -rn "/Users/" sur les mêmes fichiers -> vide après correction (les deux occurrences de chemin Jenkins ont été abrégées en "…/workspace/..." pour rester cohérentes avec baseline-2.2.1/README.md) ; confirmé vide par le vérificateur.
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 95 appels API (sonnet-5 : 94, fable-5-1 : 1), 8 778 tokens de sortie, 12 967 488 cache read, 272 804 cache write, ≈ 4,17 USD ≈ 3,59 EUR équivalent API (taux de repli figé du 2026-09-03 : 1 USD = 0,8610 EUR, BCE injoignable ; tarifs de liste, pas une facture). Fenêtre entre le commit précédent (4056832) et le commit de la tâche (e468cdd), sous-agent Sonnet et son vérificateur indépendant compris. Fenêtre 22 min, temps effectif ≈ 22 min, aucune pause (cohérent avec les 23 min rapportées par l'outil Agent). Chaîne conduite sur Claude Code / Fable 5.1, sous-agent sur Sonnet (label model:secondaire). Contrôles refaits depuis la session principale après le commit : 691 lignes dans chaque web-assets.sha256 (2.2.0, 2.2.1, 2.2.3), 5 hachages tirés au sort identiques à l'app installée, listes de hachages 2.2.0 et 2.2.3 identiques, grep de données personnelles vide, git status vide sous private/.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
