@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@claude'
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:39'
+updated_date: '2026-11-02 23:40'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -70,6 +70,8 @@ Assets : aucun asset produit ou modifié (fichiers texte et code uniquement) ; c
 Incidents : aucun.
 Capitalisation : rien à verser de plus — tout est dans le CHANGELOG 0.5, les étiquettes et ces notes. Délibérément laissé : étiquettes antérieures sur les faits non reverifiables (taux Bobcoins, coût racine avec sous-agents, commandUse, comportement des écrans d'approbation).
 Vérificateur indépendant : sans objet (Incidents = aucun).
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 30 appels API, ≈ 1,48 USD ≈ 1,32 EUR équivalent API (taux BCE du 2026-11-02 : 1 USD = 0,8916 EUR ; tarifs de liste, pas une facture). Fenêtre b0b51b9 → 3d5588b, 3 min, temps effectif ≈ 3 min, aucune pause (cohérent avec les 2,7 min de l'outil Agent, 38 appels d'outils). Orchestration sur Opus 5.5, sous-agent sur Sonnet. Contrôles refaits depuis la session principale : hachage unique 6256eb2b94dd des cinq _bobcheck.py ; py_compile et node --check OK ; ./install.sh puis les cinq scripts installés lancés depuis le répertoire personnel, aucun avertissement, bob_version.py reference MATCH sur 2.3.0 / 013 ; aucune donnée personnelle dans les fichiers livrés.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary

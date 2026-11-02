@@ -1,10 +1,10 @@
 ---
 id: TASK-17
 title: Re-verify bob-sideshow against IBM Bob 2.3.0
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:39'
+updated_date: '2026-11-02 23:40'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -20,12 +20,20 @@ Parent of the m-2 milestone. Shared facts (session of 2026-11-02): Bob installed
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 TASK-17.1 to TASK-17.5 are Done with named evidence
-- [ ] #2 Every shipped script run cold after ./install.sh on the 2.3.0 installation, without warning
+- [x] #1 TASK-17.1 to TASK-17.5 are Done with named evidence
+- [x] #2 Every shipped script run cold after ./install.sh on the 2.3.0 installation, without warning
 <!-- AC:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
 TASK-17.5 faite (2026-11-03) : etiquettes 2.3.0, VERIFIED_* bumpes, CHANGELOG 0.5 date. Hachage unique des _bobcheck.py : 6256eb2b94dda0477db5d62d31446682c902acef. Tag annote v0.5 et gh release restent a la session principale, sur le commit de TASK-17.5.
+
+Clôture par la session d'orchestration (2026-11-03). Vérification de livraison. AC #1 : TASK-17.1 (7f398f5), 17.2 (fa17908), 17.3 (e736760), 17.4 (568c724), 17.5 (3d5588b) sont Done, chacune avec ses lignes de preuve par critère et une ligne de télémétrie mesurée depuis la session principale après son commit. AC #2 : ./install.sh exécuté, puis les cinq scripts installés lancés un par un depuis le répertoire personnel contre l'installation 2.3.0 : bob_telemetry.py summary, dump_system_prompt.py --list, approval_check.py, rule_locations.py affichent verified build ; bob_version.py affiche reference MATCH — verified on bob-code 2.3.0 / 013_workspace_editor_sessions ; zéro ligne d'avertissement. Incidents : aucun dans la chaîne. Écart de forme : le commit 7f398f5 porte la ligne Co-Authored-By Claude Sonnet 5.5 au lieu d'Opus 5.5, déjà poussé, laissé tel quel. Coût de la milestone : ≈ 17,4 EUR équivalent API et ≈ 47 min effectives pour les cinq sous-tâches, détail dans .kimi-code/skills/run-milestone/calibration.md. Restent indéterminés, consignés dans docs/bob-2.2.3-to-2.3.0.md : où l'IDE coupe l'auto-approbation en dossier non fiable, web_search en production, PermissionRequest pour les sous-agents, écrans d'approbation de la webview, écrivain des lignes editorSession, contrôle d'ordre des plugins de TASK-14. Release : tag annoté v0.5 sur 3d5588b (le commit qui porte la section CHANGELOG 0.5) et release GitHub avec cette section comme notes, publiés par la session d'orchestration.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+bob-sideshow re-vérifié sur IBM Bob 2.3.0 (build 1.126.0+bob2.3.0.20261026121409, schéma 013) par cinq sous-tâches : delta publié dans docs/bob-2.2.3-to-2.3.0.md ; modèle d'approbation réécrit avec la section There is no yolo mode et la porte .bobignore ; hooks à neuf événements, plugins mcp.json et prompt mcp_instructions documentés ; défaut de lecture des flags corrigé dans bob-version et rétention des tâches documentée dans bob-telemetry ; VERIFIED_* à 2.3.0 et CHANGELOG 0.5. Vérifié par exécution à froid des cinq scripts installés contre l'installation réelle, sans avertissement.
+<!-- SECTION:FINAL_SUMMARY:END -->

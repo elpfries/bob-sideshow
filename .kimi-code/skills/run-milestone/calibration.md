@@ -99,3 +99,34 @@ Enseignements chiffrés :
   agent, il n'a rien coûté en attente.
 - **Une coupure réseau d'un agent avant toute écriture coûte ~1 EUR** (le brief relu par un
   agent neuf) et zéro travail refait, si l'arbre est inventorié avant la relance.
+
+## m-2 — v2.3.0 adaptations (close le 2026-11-03)
+
+Chaîne conduite depuis Claude Code / Opus 5.5 (session principale) ; sous-agents sur Sonnet
+(`model:secondaire`, les six tâches). Coûts = équivalent tarif liste API (script `backfill.py`,
+taux BCE du 2026-11-02 : 1 USD = 0,8916 EUR), pas une facture. Le coût inclut l'orchestration.
+
+| Tâche | Nature | Modèle | Coût | Temps effectif |
+|---|---|---|---|---|
+| (hors tâche) identification du build, gel de la baseline 2.3.0, verdicts d'ancres, delta global, création de m-2 et de 6 tâches | relevé + rédaction backlog | Opus (session) | non mesuré (hors fenêtre de commit) | ≈ 10 min |
+| TASK-17.1 — delta 2.2.3 → 2.3.0, page publique, 66 landmarks, passations aux trois tâches aval | reverse-engineering, doc publique | Sonnet | 8,25 EUR | 22 min |
+| TASK-17.2 — modèle d'approbation, section yolo réécrite, porte .bobignore approchée | relecture claim par claim + script | Sonnet | 3,69 EUR | 10 min |
+| TASK-17.3 — hooks, règles, plugins, prompt injecté, command-guard rejoué | relecture + exécutions | Sonnet | 2,30 EUR | 7 min |
+| TASK-17.4 — base, flags (défaut de lecture corrigé), rétention | relecture + correction ciblée | Sonnet | 1,88 EUR | 5 min |
+| TASK-17.5 — ré-étiquetage, `VERIFIED_*`, CHANGELOG 0.5 | ré-étiquetage guidé par les passations | Sonnet | 1,32 EUR | 3 min |
+| (hors tâche) mesures, contrôles à froid, clôture | orchestration | Opus (session) | ≈ 2 EUR | ≈ 5 min |
+| **Total** | 5 sous-tâches + parente + orchestration | | **≈ 19 EUR** | **≈ 62 min** |
+
+Estimation annoncée au lancement : 25–40 EUR. Réalisé : ≈ 17,4 EUR pour les cinq sous-tâches,
+≈ 19 EUR orchestration comprise — sous la fourchette.
+
+Enseignements chiffrés :
+
+- **Un vrai changement de bundle, outillage en place, coûte ~19 EUR contre ~69 EUR pour m-1.**
+  L'écart est l'analyse de conception et l'outil de diff, payés une fois en m-1. Aucune tâche
+  `model:primaire` n'a été nécessaire : la méthode existait.
+- **La tâche de delta pèse près de la moitié** (8,25 EUR sur 17,4) ; ses passations par tâche
+  aval ont rendu les suivantes courtes (3 à 10 min, 1,3 à 3,7 EUR).
+- **Coût décroissant le long de la chaîne** : chaque tâche aval lit des notes déjà tranchées.
+- **Aucun arrêt utilisateur** : une tâche Bob réelle sur le nouveau build existait déjà en base.
+  Vérifier la base avant de poser la question.
