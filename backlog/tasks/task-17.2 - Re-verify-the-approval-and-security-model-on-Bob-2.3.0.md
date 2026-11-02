@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@claude'
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:23'
+updated_date: '2026-11-02 23:24'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -221,6 +221,8 @@ Labelled 2.3.0 (re-read on build 1.126.0+bob2.3.0.20261026121409): the whole of 
 Left with an earlier label or undetermined, with reason: (a) behaviour of the approval dialog and of the settings screens: only string presence checked on 2.3.0 (webview not diffed, 77 logical files changed) - last read 2.2.0; (b) where untrusted folder switches off auto-approval in the IDE - undetermined on 2.2.3 and 2.3.0; (c) web_search registration in the production IDE - undetermined, not exercised; (d) merge of several PermissionRequest handlers and whether it fires for subagents - undetermined; (e) inputs that make the tree-sitter parser fail - not enumerated; (f) whether an execute_command ever counts as outside the workspace - not established.
 Facts for other tasks found while doing this one: the PreToolUse hook runs BEFORE Bob security check and approval (also on 2.2.3), the opposite of what approvals.md used to say; docs/codex-vs-bob.md line 75 says a Codex flag is Bob's yolo, which a reader could take for an IBM Bob IDE setting - out of scope here, worth a look in a docs pass; TASK-17.3 (hooks) can reuse the hook order and the PermissionRequest facts of approvals.md.
 Not done: no change to _bobcheck.py, VERIFIED_*, README, CHANGELOG, other skills or docs.
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 64 appels API, ≈ 4,14 USD ≈ 3,69 EUR équivalent API (taux BCE du 2026-11-02 : 1 USD = 0,8916 EUR ; tarifs de liste, pas une facture). Fenêtre 9a0bad4 → fa17908, 10 min, temps effectif ≈ 10 min, aucune pause (cohérent avec les 9,8 min de l'outil Agent, 68 appels d'outils). Orchestration sur Opus 5.5, sous-agent sur Sonnet. Contrôles refaits depuis la session principale : py_compile OK, un seul hachage pour les cinq _bobcheck.py, approval_check.py exécuté contre l'installation 2.3.0 (avertissement de version attendu jusqu'à 17.5), section There is no yolo mode présente dans approvals.md.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
