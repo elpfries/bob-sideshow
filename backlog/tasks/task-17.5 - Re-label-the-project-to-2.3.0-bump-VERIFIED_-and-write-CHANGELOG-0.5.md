@@ -4,6 +4,7 @@ title: 'Re-label the project to 2.3.0, bump VERIFIED_* and write CHANGELOG 0.5'
 status: To Do
 assignee: []
 created_date: '2026-11-02 22:51'
+updated_date: '2026-11-02 23:23'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -31,3 +32,14 @@ Shared facts (session of 2026-11-02): Bob installed = 2.3.0, build 1.126.0+bob2.
 - [ ] #4 CHANGELOG has a dated 0.5 section stating what changed in Bob between 2.2.3 and 2.3.0 that matters to bob-sideshow, and what changed in bob-sideshow
 - [ ] #5 python3 -m py_compile skills/*/scripts/*.py and node --check skills/bob-override-rules/templates/hooks/command-guard.mjs pass; ./install.sh then every installed script runs clean from ~/.bob/skills
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+HANDOFF FROM TASK-17.2 (2026-11-03), for the label bump. Build verified: 1.126.0+bob2.3.0.20261026121409, source dist/extension.js plus webview and db read-only.
+Labelled 2.3.0 in skills/bob-security-model: reference/approvals.md (all of it except the items below), the docstring of scripts/approval_check.py, the header line of SKILL.md. The script still prints the verified-on-2.2.3 warning because _bobcheck.py and VERIFIED_* are untouched; after your bump it should print nothing on 2.3.0 (re-run: python3 skills/bob-security-model/scripts/approval_check.py 'git status').
+Kept with an earlier label or undetermined, with reason: (a) approval dialog and settings screens: only webview string presence checked on 2.3.0, behaviour last read on 2.2.0, 77 logical webview files changed and not diffed; (b) where an untrusted folder switches off auto-approval in the IDE: undetermined on 2.2.3 and 2.3.0; (c) web_search registration in the production IDE: undetermined, not exercised; (d) merge of several PermissionRequest handlers and firing for subagents: undetermined; (e) inputs that make the tree-sitter parser fail: not enumerated; (f) whether execute_command ever counts as outside the workspace: not established.
+Corrected a pre-existing error: the PreToolUse hook runs first (before the security check and the approval flow), also on 2.2.3; approvals.md used to say after the security check. Worth a look in bob-override-rules (TASK-17.3) and in the command-guard.mjs header if either repeats the old order (I found no other occurrence of the sentence in skills/ docs/ README.md).
+Out of scope, noticed: docs/codex-vs-bob.md line 75 says a Codex flag is Bob's yolo; a reader could take it for an IBM Bob IDE setting (the IDE has none).
+approval_check.py gained --workspace and an approximated ignored-path write gate; if you change the CHANGELOG or README wording about the script, say approximation.
+<!-- SECTION:NOTES:END -->
