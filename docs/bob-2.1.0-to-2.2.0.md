@@ -289,3 +289,5 @@ used only in development mode — `bob-code` itself (prompts, approval engine, t
 otherwise unchanged since 2.2.0. See [CHANGELOG](../CHANGELOG.md) 0.4 for the full verdict and
 `private/SOURCES.md` ("Verdicts 2.2.0 -> 2.2.1 -> 2.2.3") for the proof; this page's own content is not
 rewritten, since nothing it describes changed.
+
+**2026-11-02 update (TASK-17.1):** Bob then updated to 2.3.0; the delta from 2.2.3 is established in [bob-2.2.3-to-2.3.0.md](bob-2.2.3-to-2.3.0.md).
