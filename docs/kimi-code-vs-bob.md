@@ -74,7 +74,7 @@ mode approves `AgentSwarm`; a built-in list of always-approved read-only tools (
 inside the workspace of a git repository are approved; otherwise ask.
 
 Three consequences. Bob's approved-command list is one policy among nineteen here. A user `deny`
-rule beats `yolo`, unlike Bob where the allowed list is the whole story. And writes inside a git
+rule beats `yolo`, unlike Bob, where the allowed list is not the only gate either: the command-security check and, on 2.3.0, the ignored-path write gate sit beside it, and no mode switches them all off. And writes inside a git
 repository never ask, on the reasoning that git is the undo.
 
 **Modes.** `manual` (default), `auto`, `yolo`; the session can override the config value

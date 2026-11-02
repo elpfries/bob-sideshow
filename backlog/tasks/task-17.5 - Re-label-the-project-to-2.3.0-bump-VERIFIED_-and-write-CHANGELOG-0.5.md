@@ -1,10 +1,11 @@
 ---
 id: TASK-17.5
 title: 'Re-label the project to 2.3.0, bump VERIFIED_* and write CHANGELOG 0.5'
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@claude'
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:35'
+updated_date: '2026-11-02 23:39'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -26,11 +27,11 @@ Shared facts (session of 2026-11-02): Bob installed = 2.3.0, build 1.126.0+bob2.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 VERIFIED_EXTENSION is 2.3.0 and VERIFIED_SCHEMA is 013_workspace_editor_sessions in all five copies, and shasum skills/*/scripts/_bobcheck.py shows one hash
-- [ ] #2 No shipped script prints a version or schema mismatch warning on the 2.3.0 installation (all five run)
-- [ ] #3 No published file claims 2.2.3 verification for a fact re-checked on 2.3.0, and facts not re-checked keep their earlier build label
-- [ ] #4 CHANGELOG has a dated 0.5 section stating what changed in Bob between 2.2.3 and 2.3.0 that matters to bob-sideshow, and what changed in bob-sideshow
-- [ ] #5 python3 -m py_compile skills/*/scripts/*.py and node --check skills/bob-override-rules/templates/hooks/command-guard.mjs pass; ./install.sh then every installed script runs clean from ~/.bob/skills
+- [x] #1 VERIFIED_EXTENSION is 2.3.0 and VERIFIED_SCHEMA is 013_workspace_editor_sessions in all five copies, and shasum skills/*/scripts/_bobcheck.py shows one hash
+- [x] #2 No shipped script prints a version or schema mismatch warning on the 2.3.0 installation (all five run)
+- [x] #3 No published file claims 2.2.3 verification for a fact re-checked on 2.3.0, and facts not re-checked keep their earlier build label
+- [x] #4 CHANGELOG has a dated 0.5 section stating what changed in Bob between 2.2.3 and 2.3.0 that matters to bob-sideshow, and what changed in bob-sideshow
+- [x] #5 python3 -m py_compile skills/*/scripts/*.py and node --check skills/bob-override-rules/templates/hooks/command-guard.mjs pass; ./install.sh then every installed script runs clean from ~/.bob/skills
 <!-- AC:END -->
 
 ## Implementation Notes
@@ -49,4 +50,30 @@ PASSATION DE TASK-17.4 (2026-11-03, build 1.126.0+bob2.3.0.20261026121409) pour 
 - Laissées antérieures (non revérifiables sur 2.3.0) : taux Bobcoins/M et classes standard/economy (2.1.0) ; coût d'une racine incluant ses sous-agents (2.2.3, aucun sous-agent dans la base) ; forme de toolUsage.commandUse (vue seulement sur 2 commandes simples non signalées).
 - Indéterminé : contenu d'une ligne editorSession:<project_id> (aucun écrivain dans le bundle, aucune ligne dans la base).
 - Les scripts bob-telemetry et bob-version avertissent encore verified on 2.2.3 ; _bobcheck.py non touché (hachage unique).
+
+PASSATION DE TASK-17.5 (2026-11-03, build 1.126.0+bob2.3.0.20261026121409)
+
+Fait : VERIFIED_EXTENSION 2.3.0 et VERIFIED_SCHEMA 013_workspace_editor_sessions dans les cinq _bobcheck.py (indice "matcher logic comes from the 2.3.0 bundle" aligne), pose en dernier. Ré-étiquetage : README (ligne de build), docs/bob-in-perspective.md (build, colonne Bob 2.3.0, neuf evenements de hook), cursor-vs-bob.md et claude-code-vs-bob.md (neuf evenements sur 2.3.0, source bundle), kimi-code-vs-bob.md (la liste autorisee n'est pas la seule porte), codex-vs-bob.md et claude-code-vs-bob.md (plus de "yolo de Bob" : l'IDE n'en a pas, --yolo = alias obsolete de --auto-approve dans Bob Shell), docstring de bob_telemetry.py (schema 2.3.0). opencode-vs-bob.md : aucune etiquette de build Bob, inchange. CHANGELOG section 0.5 datee 2026-11-03.
+Etiquettes 2.2.3 restantes, toutes justifiees : historique ou contraste (README "2.2.1 et 2.2.3", liens vers bob-2.2.3-to-2.3.0.md, "was 25/50 on 2.2.3", "2.2.3 removed one level of children"), faits non reverifiables sur 2.3.0 laisses (SKILL.md de bob-telemetry : classes/taux, cout racine avec sous-agents), pages de 17.2-17.4 qui citent 2.2.3 comme point de comparaison.
+Hachage unique des cinq _bobcheck.py : 6256eb2b94dda0477db5d62d31446682c902acef.
+Reste a la session principale : tag annote v0.5 sur le commit de cette tache, gh release create v0.5 avec la section 0.5 en notes. TASK-17 parente non close.
+
+Vérification de livraison
+AC #1 : shasum skills/*/scripts/_bobcheck.py donne un seul hachage 6256eb2b94dda0477db5d62d31446682c902acef pour les cinq ; grep -h "^VERIFIED" donne 2.3.0 et 013_workspace_editor_sessions cinq fois.
+AC #2 : lances depuis ~ apres install.sh : bob_version.py (reference MATCH - verified on bob-code 2.3.0 / 013_workspace_editor_sessions), dump_system_prompt.py --task 6cc0a0b9 --list ("verified build"), rule_locations.py ("verified build"), approval_check.py "git status" ("verified build", PROMPT), bob_telemetry.py summary ("verified build", history window). Zero avertissement.
+AC #3 : grep 2.2.3 / 20261014125159 avant (72 lignes hors pages de delta) et apres : chaque occurrence restante est historique, contrastive ou un fait non reverifie (voir ci-dessus) ; aucune ne pretend une verification 2.2.3 pour un fait reverifie sur 2.3.0.
+AC #4 : section 0.5 du CHANGELOG ecrite (changements de Bob et de bob-sideshow, une puce par point).
+AC #5 : py_compile skills/*/scripts/*.py et node --check command-guard.mjs passent ; ./install.sh puis les cinq scripts installes executes depuis ~ sans avertissement.
+
+## Vérification de livraison
+Assets : aucun asset produit ou modifié (fichiers texte et code uniquement) ; contrôles d'intégrité : cinq _bobcheck.py au hachage identique 6256eb2b94dda0477db5d62d31446682c902acef, py_compile et node --check verts.
+Incidents : aucun.
+Capitalisation : rien à verser de plus — tout est dans le CHANGELOG 0.5, les étiquettes et ces notes. Délibérément laissé : étiquettes antérieures sur les faits non reverifiables (taux Bobcoins, coût racine avec sous-agents, commandUse, comportement des écrans d'approbation).
+Vérificateur indépendant : sans objet (Incidents = aucun).
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Re-labelled to 2.3.0 (README, perspective and comparison pages, bob_telemetry docstring), VERIFIED_* bumped in the five identical _bobcheck.py (hash 6256eb2b), codex/claude yolo wording fixed, CHANGELOG 0.5 written. Verified: shasum, py_compile, node --check, install.sh and the five installed scripts from ~ with no warning.
+<!-- SECTION:FINAL_SUMMARY:END -->

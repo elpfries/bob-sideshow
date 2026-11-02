@@ -69,8 +69,8 @@ settings, project settings, local settings, `--settings` flags, CLI arguments, t
 list; Claude Code layers them and lets an organisation pin the top layer.
 
 **Modes.** `default` (ask for anything not allowed), `acceptEdits` (file edits auto-approved),
-`plan` (read-only until the plan is accepted), `dontAsk`, `bypassPermissions` (Bob's "yolo",
-which Bob's IDE does not have; can be disabled by managed settings), and `auto`.
+`plan` (read-only until the plan is accepted), `dontAsk`, `bypassPermissions` (no Bob IDE equivalent: bob-code 2.3.0 has no yolo mode, only the
+Bob Shell `--yolo` alias of `--auto-approve`; can be disabled by managed settings), and `auto`.
 
 **Model check.** `auto` mode is the counterpart of Bob's command-security model, and of Cursor's
 Smart Auto: a classifier decides each call ("Allowed by auto mode classifier", "Denied by auto
@@ -143,7 +143,8 @@ model evaluates the policy; Haiku unless a model is named) and `http`. A hook an
 (`permissionDecision`, `permissionDecisionReason`, `updatedInput`, `additionalContext`,
 `continue`, `stopReason`, `systemMessage`) or with exit code 2, whose meaning depends on the event:
 block the tool call and show stderr to the model (PreToolUse), stop the agentic loop (Stop),
-erase the prompt (UserPromptSubmit). Bob has seven events on 2.2.3 (JSON replies, HTTPS handlers,
+erase the prompt (UserPromptSubmit). Bob has nine events on 2.3.0 (bundle; the two new ones, `PermissionRequest` and
+`PermissionResolved`, fire only when Bob would show an approval prompt; JSON replies, HTTPS handlers,
 the same block/cannot-block exit-code split); Cursor has 22 events; Claude Code has 21 and the
 richest reply format. The binary also knows Cursor's
 `~/.cursor/hooks.json` and `.cursor/hooks.json` paths, for import.

@@ -4,11 +4,11 @@
   bob_telemetry.py summary|tasks|calls|tools|security|changes|context [--task PREFIX] [--since YYYY-MM-DD]
                    [--db PATH] [--json]
 
-Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.2.3 schema
-(011_key_value_store); re-verified 2026-09-28 on live bob-code 2.2.0 traffic, and again 2026-10-19 on
-live bob-code 2.2.3 traffic (task 9ad66ac1, TASK-16.2) — same schema, same call shape. Re-run 2026-11-03 on
-bob-code 2.3.0 (build 1.126.0+bob2.3.0.20261026121409, schema 013_workspace_editor_sessions, task 6cc0a0b9,
-TASK-17.4): no parsing change needed, every view runs.
+Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.3.0 schema
+(013_workspace_editor_sessions; migrations 012 and 013 add triggers, no table) — build
+1.126.0+bob2.3.0.20261026121409, task 6cc0a0b9, TASK-17.4, 2026-11-03: no parsing change needed, every view
+runs. Earlier checks: live bob-code 2.2.0 traffic 2026-09-28, live bob-code 2.2.3 traffic 2026-10-19 (task
+9ad66ac1, TASK-16.2; schema 011_key_value_store) — same call shape.
 
 The database never holds the full history: at startup Bob deletes root tasks whose updated_at is older than
 the setting tasks.retentionDays (default 30 days) unless pinned; on 2.3.0 their whole sub-task trees go with

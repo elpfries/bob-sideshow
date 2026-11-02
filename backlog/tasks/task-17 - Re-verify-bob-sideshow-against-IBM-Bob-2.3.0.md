@@ -4,6 +4,7 @@ title: Re-verify bob-sideshow against IBM Bob 2.3.0
 status: To Do
 assignee: []
 created_date: '2026-11-02 22:51'
+updated_date: '2026-11-02 23:39'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -22,3 +23,9 @@ Parent of the m-2 milestone. Shared facts (session of 2026-11-02): Bob installed
 - [ ] #1 TASK-17.1 to TASK-17.5 are Done with named evidence
 - [ ] #2 Every shipped script run cold after ./install.sh on the 2.3.0 installation, without warning
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+TASK-17.5 faite (2026-11-03) : etiquettes 2.3.0, VERIFIED_* bumpes, CHANGELOG 0.5 date. Hachage unique des _bobcheck.py : 6256eb2b94dda0477db5d62d31446682c902acef. Tag annote v0.5 et gh release restent a la session principale, sur le commit de TASK-17.5.
+<!-- SECTION:NOTES:END -->

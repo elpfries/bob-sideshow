@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.5 — 2026-11-03
+
+Verified on IBM Bob 2.3.0, a real update this time: `bob-code` changed, and so did several answers.
+
+- **Re-verified on IBM Bob 2.3.0** (`bob-code` 2.3.0, build `1.126.0+bob2.3.0.20261026121409`; database
+  schema `013_workspace_editor_sessions`, 13 migrations). Every script and reference note states the build
+  its facts were checked on, and no script warns on a 2.3.0 install. What moved between 2.2.3 and 2.3.0,
+  and how each fact was established, is in [docs/bob-2.2.3-to-2.3.0.md](docs/bob-2.2.3-to-2.3.0.md).
+  Facts that cannot be re-checked on 2.3.0 keep their earlier build label.
+- **What changed in Bob that matters here:**
+  - **Hooks: nine events.** `PermissionRequest` and `PermissionResolved` join the seven; they fire only
+    when Bob would show an approval prompt, and exit code 2 cannot block them. A hook group can list
+    `fileSystems`, and by default hooks run in local folders only.
+  - **A new gate before approval: `.bobignore` and `.gitignore`.** Writes to ignored paths are not
+    auto-approved. The `PreToolUse` hook runs before the security check, not after.
+  - **There is no yolo mode in the IDE.** The word exists only in Bob Shell, where `--yolo` is a
+    deprecated alias of `--auto-approve`.
+  - **Prompt:** a new `mcp_instructions` section; the first message now carries the date and the mode;
+    file tools take absolute paths; `web_search` is registered but disabled.
+  - **Plugins:** a plugin can ship an `mcp.json`, and the global `~/.bob/plugins/<name>/mcp.json` is read.
+  - **Subagents:** turn limits are inherited from the parent instead of fixed at 25 and 50.
+  - **Database:** migrations 012 and 013 add triggers, no table; `_meta.spend` is still
+    `{cost, contextTokens}`; five new server flags; old tasks are purged recursively, whole sub-task
+    trees at once, after `tasks.retentionDays` (30 by default).
+- **What changed in bob-sideshow:**
+  - `bob-security-model` rewritten on 2.3.0, with a section "There is no yolo mode" and two corrections
+    (the `browser` group was missing; `PreToolUse` runs before the security check).
+  - `approval_check.py` approximates the ignored-path write gate (option `--workspace`); it is an
+    approximation, not Bob's code.
+  - `bob-version` read the server flags in `state.vscdb`, but Bob has cached them in
+    `bob.db` (`key_value_store`, `featureFlags.v1`) since 2.2.0: fixed, with the five new flags listed.
+  - `bob-telemetry` documents the task retention window and prints it in `summary` ("history window").
+  - `bob-override-rules` and `bob-agent-rules` cover the nine hook events, `fileSystems`, plugin
+    `mcp.json`, `mcp_instructions` and the inherited turn limits; the header of `command-guard.mjs` is
+    corrected.
+  - README and the comparison pages carry the 2.3.0 build and hook count; `codex-vs-bob.md` no longer
+    calls a Codex flag Bob's yolo.
+  - `VERIFIED_EXTENSION` is `2.3.0` and `VERIFIED_SCHEMA` is `013_workspace_editor_sessions` in the five
+    copies of `_bobcheck.py`.
+
 ## 0.4 — 2026-10-19
 
 Re-verified on IBM Bob 2.2.3. Nothing in Bob changed that this project needed to say differently;

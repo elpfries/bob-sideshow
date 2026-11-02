@@ -7,7 +7,8 @@ Claude Code, OpenCode, Codex and Kimi Code that bob-sideshow asks of IBM Bob:
 [kimi-code-vs-bob.md](kimi-code-vs-bob.md). This one turns the comparison around and asks what
 Bob does better, where it lags, and what that says about bob-sideshow itself.
 
-Builds: IBM Bob 2.2.3 (bob-code unchanged since 2.2.0, see CHANGELOG 0.4); Cursor 3.19.13 with agent runtime 2026.09.15; Claude Code 2.1.274;
+Builds: IBM Bob 2.3.0 (`bob-code` 2.3.0, build 1.126.0+bob2.3.0.20261026121409; the Bob column was re-read
+on it, see CHANGELOG 0.5); Cursor 3.19.13 with agent runtime 2026.09.15; Claude Code 2.1.274;
 OpenCode 1.18.21; Codex CLI 0.154.0-alpha.6.2; Kimi Code extension 0.7.5. Same method
 everywhere: installed files, local databases, settings; no source code, no network capture.
 Codex and Kimi Code were surveyed before any session had run, so their findings come from the
@@ -54,8 +55,9 @@ managed tier on top.
 macOS, Landlock or bubblewrap on Linux), with the network cut by default in Codex. Bob,
 OpenCode and Kimi Code rely on the model check and the user.
 
-**Fewer hook events than five of the six.** Bob has seven — `SessionStart`, `UserPromptSubmit`,
-`PreToolUse`, `PostToolUse`, `PreCompact`, `PostCompact`, `Stop` — each now answers with structured
+**Fewer hook events than five of the six.** Bob has nine (2.3.0, bundle) — `SessionStart`, `UserPromptSubmit`,
+`PreToolUse`, `PostToolUse`, `PreCompact`, `PostCompact`, `Stop`, and the new `PermissionRequest` and
+`PermissionResolved`, which fire only when Bob would show an approval prompt — each answers with structured
 JSON (permission decision, rewritten input, extra context) and can be an HTTPS handler as well as a
 shell command. Codex has twelve events, Kimi Code sixteen, Claude Code twenty-one, Cursor
 twenty-two. A guard when a subagent starts still cannot be written for Bob.
@@ -96,14 +98,14 @@ the user set.
 
 ## Side-by-side
 
-| Question | Bob 2.2.3 | Cursor | Claude Code | OpenCode | Codex | Kimi Code |
+| Question | Bob 2.3.0 | Cursor | Claude Code | OpenCode | Codex | Kimi Code |
 |---|---|---|---|---|---|---|
 | System prompt readable locally | stored per task | no (server) | in binary | in binary, per model | in binary, per model | in bundle, replaceable by `SYSTEM.md` |
 | Cost per call, offline | yes, price only | no | tokens + model, no price | yes, price + model | tokens; price from server | tokens + model; price if provider sends it |
 | Model-based command check | always on, fail-closed | optional (Smart Auto) | optional (auto mode) | none | optional (guardian) | none |
 | Allowlist matching | token prefix, no wildcard, tie → allow | glob, per-tool | glob, 8 layered sources | glob, last rule wins | prefix rules in `.rules` files | glob, 19-policy chain, deny beats yolo |
 | Sandbox | none | seatbelt / bwrap | seatbelt / bwrap | none | seatbelt / Landlock, network off | none |
-| Hook events | 7, JSON + HTTPS | 22 | 21 | plugin API (in-process) | 12 (trusted hooks) | 16 |
+| Hook events | 9, JSON + HTTPS | 22 | 21 | plugin API (in-process) | 12 (trusted hooks) | 16 |
 | Explore subagent model | economy, fixed | setting | inherit with cap, env override | parent's | configurable default | secondary model, per profile |
 | Reads AGENTS.md | yes | yes | plugin option only | yes (plus CLAUDE.md) | yes, spec in prompt | yes |
 | Managed / admin settings | no | yes | yes | no | yes (MDM, requirements) | no |

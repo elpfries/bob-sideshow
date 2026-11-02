@@ -72,8 +72,10 @@ bubblewrap through `codex-linux-sandbox` on Linux, with network disabled
 
 **Approval policy**: `on-request` (the model asks when it wants to escalate out of the sandbox),
 `on-failure` (retry outside the sandbox after asking), `never`. `untrusted` is "no longer
-supported" on this build. `--dangerously-bypass-approvals-and-sandbox` is Bob's yolo; the CLI
-refuses `never` when admin requirements forbid full access.
+supported" on this build. `--dangerously-bypass-approvals-and-sandbox` is the nearest thing Codex has to a yolo mode. The
+Bob IDE has none (bob-code 2.3.0, bundle; see "There is no yolo mode" in
+`skills/bob-security-model/reference/approvals.md`); `--yolo` exists only in Bob Shell, as a
+deprecated alias of `--auto-approve`. The CLI refuses `never` when admin requirements forbid full access.
 
 **Model check.** `--approve-for-me`, config `approvals_reviewer = "auto_review"`, feature
 `guardian_approval`: a model judges each escalation with a policy prompt that begins "You are
