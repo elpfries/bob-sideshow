@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@claude'
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:12'
+updated_date: '2026-11-02 23:13'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -59,6 +59,8 @@ AC5. Handoff notes appended to TASK-17.2 (approvals, trust, MCP auto-approval, n
 NOT PROVEN / LEFT UNDETERMINED (stated in the page): where untrusted folder switches off auto-approval in the IDE; web_search registration in the production IDE (as read it is not registered; not exercised); the webview approval dialog (77 logical files changed, not diffed); merge rule of several PermissionRequest handlers (only the skill text); who writes editorSession key_value_store rows; the activate() returned API; subagent PermissionRequest; tool annotations (SDK schema only); symbolic-link skills and the execute_command hang fix (no literal).
 
 Correction to the AC3 line above: the delta part of the page has 8 numbered sections (approval engine and auto-approval, folder trust, hooks, rules/plugins/MCP, system prompt and tools, settings, database, UI/commands/activation), not 9; and the number of review corrections was about a dozen, not an exact 15.
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 123 appels API, ≈ 9,25 USD ≈ 8,25 EUR équivalent API (taux BCE du 2026-11-02 : 1 USD = 0,8916 EUR ; tarifs de liste, pas une facture). Fenêtre 1ea656d → 7f398f5, 22 min, temps effectif ≈ 22 min, aucune pause (cohérent avec les 21,5 min de l'outil Agent, 125 appels d'outils). Session d'orchestration sur Opus 5.5, sous-agent sur Sonnet (model:secondaire). Contrôles refaits depuis la session principale : bundle_tools.py --landmarks 66/66 sur 2.3.0, arbre propre, notes de passation présentes sur 17.2/17.3/17.4. Écart signalé par l'agent : son commit porte la ligne Co-Authored-By Claude Sonnet 5.5 au lieu d'Opus 5.5 (rappel système du sous-agent) ; commit déjà poussé, laissé tel quel.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
