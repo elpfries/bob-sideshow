@@ -1,4 +1,4 @@
-# Command-to-skill migration — bob-code 2.2.3
+# Command-to-skill migration — bob-code 2.3.0
 
 Skills appearing in `.bob/skills/` that nobody created, coming back after every deletion.
 Nothing to do with `/init`, which only writes `AGENTS.md` and `.bob/rules-<mode>/AGENTS.md` — confirmed unchanged
@@ -10,6 +10,17 @@ class (its own name is gone by CommonJS→ESM bundling — never cited here — 
 was re-read at the call site and confirmed present). Re-verified again on bob-code 2.2.3, build
 `1.126.0+bob2.2.3.20261014125159` (TASK-16.2): `extension.js` is byte-identical to the 2.2.0 one, so every claim
 below holds unchanged by bundle identity (`private/SOURCES.md` "Verdicts 2.2.0 -> 2.2.1 -> 2.2.3").
+
+**Re-verified on bob-code 2.3.0**, build `1.126.0+bob2.3.0.20261026121409` (TASK-17.3; bundle `dist/extension.js` against
+the 2.2.3 one): the migration class is unchanged. Anchors `migrateToSkills` (92 tokens), `_loadLocalCommands` (31),
+`_writeSkills` (61) IDENTICAL after neutralising identifiers; the success message `Bob has migrated {{count}} slash
+commands to skills…` is the same string; `findFiles` is still called with the glob as its only argument (124 tokens
+IDENTICAL); local roots are still `.bob`, `.agents`, `.claude` (no `plugins/*`), global target `~/.bob/skills`, the
+workspace-containment guard and the "skip if `SKILL.md` exists" check are unchanged; the migration still runs once per
+workspace folder at activation, with no flag. The skills filter still drops `disableModelInvocation` skills from the
+list shown to the model (anchor IDENTICAL, 141 tokens), so migrated commands still stay out of the prompt's
+`available_skills`. Not checked on 2.3.0: whether the changelog's "symlinked skills" fix touches this path (no
+distinctive literal located, see `docs/bob-2.2.3-to-2.3.0.md` section 4).
 
 ## What runs
 

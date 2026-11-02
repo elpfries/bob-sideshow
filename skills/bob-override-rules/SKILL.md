@@ -23,8 +23,15 @@ metadata:
    `{.bob,.agents,.claude}/**/commands/*.md` file into a skill at each start. Remove the source
    folder, or run `templates/skills/tombstone.sh <names…>` and commit the result.
 6. A prohibition needs enforcement, not a rule: `deniedCommands`, a `PreToolUse` hook
-   (`templates/hooks/`, exit 2 blocks — ask before enabling, hooks bypass approval), or a mode
-   without `execute`.
+   (`templates/hooks/`, exit 2 blocks), or a mode without `execute`. Ask before enabling a hook:
+   its command runs on the user's machine with no approval. A `PreToolUse` hook runs first, before
+   Bob's security check and approval prompt (bob-code 2.3.0, bundle: the tool resolver calls the
+   hook event, then `validateToolExecution`, then the prompt), so it can refuse or rewrite a call
+   but cannot approve one. Bob 2.3.0 has nine hook events; the two new ones, `PermissionRequest`
+   and `PermissionResolved`, run only when a prompt would open, cannot be blocked with exit 2, and
+   `PermissionRequest` can answer allow/deny as JSON (see the header of `command-guard.mjs`). Hooks
+   run in local folders only unless the matcher group lists other URI schemes in `fileSystems`
+   (default `["file"]`; the shipped template leaves it out).
 7. Tell the user: loaded at the next task; verify with `dump_system_prompt.py --grep "<phrase>"`;
    rules are probabilistic; `explore` subagents ignore them; Plan and Ask modes allow only
    `explore`; in production every tier except `explorer` maps to `premium-ide`.

@@ -5,6 +5,11 @@
 
 Sections are the top-level <tag>…</tag> blocks of the prompt; guidance blocks are the "# name — …"
 tool guides that follow <environment_info>. Read-only; standard library only.
+
+Checked on a stored bob-code 2.3.0 task (build 1.126.0+bob2.3.0.20261026121409): 12 sections plus the guidance
+blocks. 2.3.0 can also store an <mcp_instructions> section (after <project_rules>, one <server> per MCP server);
+the tag-block splitter lists it like any other section. The date and the active mode are not in the system prompt:
+they sit in the first user message (`envContext`), which this script does not print.
 """
 import argparse
 import json

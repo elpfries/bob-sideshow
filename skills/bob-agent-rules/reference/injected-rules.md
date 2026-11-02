@@ -1,6 +1,21 @@
-# Rules Bob injects — bob-code 2.2.3
+# Rules Bob injects — bob-code 2.3.0
 
 Short excerpts; `dump_system_prompt.py` prints the full text of your own prompt.
+
+**Re-verified on bob-code 2.3.0**, build `1.126.0+bob2.3.0.20261026121409` (TASK-17.3; sources: `dist/extension.js`
+compared with the 2.2.3 bundle, one stored 2.3.0 task `6cc0a0b9` in `~/.bob/db/bob.db`, and
+`docs/bob-2.2.3-to-2.3.0.md` sections 4 and 5). Verdict per claim of this page:
+
+| Claim | Verdict on 2.3.0 | Anchor / source |
+|---|---|---|
+| Rule roots, depth 5, ignored names, plugin directories sorted by name, `AGENTS.md` root only, untrusted folder gets no rules | unchanged | anchor `Rules: agents=` (the rule loader) IDENTICAL, 288 tokens; the ignored-name set and the depth limit 5 read directly |
+| Rule groups rendered as `workspace_rules_<mode>`, `workspace_rules`, `agents_md`, `global_rules_<mode>`, `global_rules`; preamble | unchanged | anchors `workspace_rules`, `agents_md` IDENTICAL; `take precedence over your training defaults` SAME string (468 chars); stored `project_rules` is 3 717 chars in the 2.2.3 and the 2.3.0 task |
+| Section list `default`/`aquarius` | unchanged in the stored prompt, **one section added to the registry** | stored 2.3.0 prompt: the same 12 sections (`--list` below); the registry has a new `mcp_instructions` entry (see "Prompt layout") |
+| Date and mode not in the system prompt | **new fact**: they are in the first user message | stored task: `current_datetime`, `current_mode` in `envContext` |
+| Sub-agent presets, forbidden tools, `modelTier` validation, tier to alias table | unchanged except turn limits | anchors `Explore codebase`, `use "modelTier" instead` unchanged; map `fast/premium/ultra -> premium-ide` read directly |
+| Sub-agent turn limit | **changed**: inherited from the parent | `setMaxTurns(agent.maxTurns ?? parent.getMaxTurns())`, was `?? 25` |
+| `/init` prompt, inline-answer wording, `Default: do the work yourself` | unchanged | anchors `AGGRESSIVELY` (12 457 chars), `answer those inline in markdown` (444), `Default: do the work yourself` SAME string |
+| Billing rates (Bobcoins per M tokens) | **not re-verified** on 2.3.0; label stays "measured on 2.1.0" | no 2.3.0 database measurement made here |
 
 Re-verified against bob-code 2.2.0, build `1.126.0+bob2.2.0.20260924155054`, using the bundle-diff evidence in
 `docs/bob-2.1.0-to-2.2.0.md`; anchors below are literals confirmed present in that build. Re-verified again on
@@ -25,8 +40,45 @@ indistinguishable from the section list alone.
 
 `role_definition` · `investigate_before_answering` · `engineering_discipline` · `tool_use` · `markdown_rules` ·
 `auto_appended_context` · `base_rules` · `available_skills` · `user_custom_instructions` · **`project_rules`** ·
-`environment_info` · tool guidance (`create_html_artifact`, office, `glob`, `grep`, IBM docs, **Subagents**,
-`create_chart`, workflows) · `available_modes`. Every one of these tag names is still a literal string in the
+[**`mcp_instructions`**, 2.3.0, only with MCP servers] · `environment_info` · tool guidance
+(`create_html_artifact`, `read_file`, Mode Switching, `office_read`, `office_edit`, `glob`, `grep`, **Subagents**,
+`create_chart` in the 2.3.0 stored task; others appear when their tools do) · `available_modes`. **New on 2.3.0** (bundle 1.126.0+bob2.3.0.20261026121409, read in the prompt-section registry, **not observed**: the
+stored 2.3.0 task had no MCP server): section `mcp_instructions` (id `mcpInstructions`) sits right after
+`project_rules` and before `environment_info` in all four configs. Its text is the preamble "Instructions provided by
+connected MCP servers. Follow them when using that server's tools." followed by one
+`<server><name>…</name><instructions>…</instructions></server>` element per server, each server's instructions
+cut at 8 KiB ("Server instructions truncated."). Only servers that have at least one tool in the task's tool list are
+included, and with no such server the section is omitted entirely, which is why the stored task shows 12 sections.
+`dump_system_prompt.py` splits on top-level `<tag>` blocks, so a prompt that has the section lists it as
+`mcp_instructions` and `--section mcp_instructions` prints it (checked on the splitter's regex, not on a real MCP prompt).
+Verified on the stored 2.3.0 task (`dump_system_prompt.py --task 6cc0a0b9 --list`, 35 639 characters): the 12 sections
+above with `role_definition` 152, `investigate_before_answering` 358, `engineering_discipline` 392, `tool_use` 975,
+`markdown_rules` 316, `auto_appended_context` 645, `base_rules` 987, `available_skills` 9 641 (9 163 in the 2.2.3 task),
+`user_custom_instructions` 907, `project_rules` 3 717, `environment_info` 246, `available_modes` 2 055, then the
+guidance blocks `create_html_artifact` 5 554, `read_file` 748 (new), Mode Switching 2 667, `office_read` 778,
+`office_edit` 1 496 (was 1 009), `glob` 396 (was 247), `grep` 1 460 (was 1 307), Subagents 1 100, `create_chart` 1 362
+(was 1 235).
+
+**Date, time and mode are not in the system prompt.** On 2.3.0 the first user message carries an `envContext`:
+`<environment_details>` with `<current_datetime>` (UTC ISO string), `<current_mode>` (display name, e.g. `Agent`), then
+`<active_file>`, `<external_changes>` and `<git_status_snapshot>` when present. The 2.2.3 stored task had only the git
+snapshot. Source: the stored 2.3.0 task (`messages.data.envContext`) and the environment renderer in the bundle.
+
+**`read_file` guidance block (2.3.0, 748 characters, "context focus").** Asks the model for a `context_focus_query`;
+the output "will be compressed". Emitted only when server flag `context-focus-query-enabled` is on (on in the cached
+flags of the inspected installation; default off in the schema).
+
+**Tools offered** to the 2.3.0 task: 25 ids, the same set as the 2.2.3 task (`GetSymbolsOverview`, `FindSymbol`,
+`FindReferencingSymbols`, `apply_diff`, `create_html_artifact`, `insert_content`, `list_files`, `read_file`,
+`search_and_replace`, `update_todo_list`, `switch_mode`, `write_file`, `execute_command`, `office_read`, `office_edit`,
+`glob`, `grep`, `list_ibm_doc_libraries`, `search_ibm_docs`, `use_skill`, `spawn_subagent`, `create_chart`,
+`ask_followup_question`, `start_subtask`, `start_workflow`). `web_search` exists in the bundle (group `browser`, setting
+`experiments.webSearch`, default `false`) but is **not registered in the production IDE as read** and is absent from the
+stored list: present in the code, gated off. File tools require absolute paths (error `path must be an absolute path`);
+`execute_command` takes an absolute `cwd` and uses the workspace root when it is omitted; `office_edit` backs the file up
+before its first edit.
+
+Every one of these tag names is still a literal string in the
 2.2.0 bundle (anchors `role_definition`, `tool_use`, `environment_info`, `available_modes`, `create_html_artifact`
 SAME string; `project_rules` and `available_skills` present, confirmed by direct read of the section registry
 — the anchor tool's own EDITED verdict on these two short literals is a spurious pairing with an unrelated
@@ -58,6 +110,13 @@ all three confirmed present by direct read of the rule-groups renderer next to t
 entry; the renderer's own minified name is not cited, since it changes on every build). This is an artefact of
 rendering, not a precedence change.
 
+**Plugins on 2.3.0** (bundle 1.126.0+bob2.3.0.20261026121409; docs/bob-2.2.3-to-2.3.0.md section 4): the rule roots above
+are unchanged (plugin directories or symlinks under `.bob/plugins/` and `~/.bob/plugins/`, sorted by name). What is new
+is that `~/.bob/plugins/<name>/mcp.json` is also read for MCP servers (the global glob is
+`{settings/mcp.json, plugins/*/mcp.json}`; 2.2.3 read only `settings/mcp.json`), the workspace glob being
+`.bob/{mcp.json, plugins/*/mcp.json}` as before, and that the plugin installer can write such an `mcp.json`.
+The ordering of a plugin that has both `rules-<mode>/` and `rules/` (TASK-14) is still untested on a real task.
+
 Preamble unchanged, confirmed byte-identical (anchor `take precedence over your training defaults` SAME string,
 468 chars, both builds): "The following rules are defined by this project and take precedence over your training
 defaults. They apply to every response for the duration of this session — do not revert to your defaults as the
@@ -84,20 +143,29 @@ dotted form `spawn_subagent.getSystemPromptPart` was never itself a bundle liter
 
 Parameters: `description` (required), `name` (default `general`), `fork_context` (false). Parallel within a
 turn. Subagents cannot use `spawn_subagent`, `start_subtask`, `start_workflow`, `switch_mode`, `update_todo_list`
-— confirmed unchanged, anchor `SUBAGENT_FORBIDDEN_TOOLS` CHANGED (5 real edits, all renames: `setModelResolver`,
+— confirmed unchanged on 2.3.0 (anchor `SUBAGENT_FORBIDDEN_TOOLS` CHANGED, 2 real edits: the turn default below and
+`onPreCompact` forwarded to subagents next to `onPreToolUse`; the forbidden array is untouched). On 2.2.0 the same anchor was
+CHANGED (5 real edits, all renames: `setModelResolver`,
 `model`→`modelTier`, `setModel`→`setModelTier`, `onPreToolUse` added to the forwarding list — the forbidden-tools
 array itself, `["spawn_subagent","start_subtask","start_workflow","switch_mode","update_todo_list"]`, is
 byte-identical; likewise `SUBAGENT_FORBIDDEN_GROUPS`, `["subagent","subtask"]`, unchanged). A `PreToolUse` event
-of the parent is now forwarded to the child subtask (`onPreToolUse`, new in 2.2.0) — a routing addition, not a
+of the parent is now forwarded to the child subtask (`onPreToolUse`, new in 2.2.0; `onPreCompact` too from 2.3.0) — a routing addition, not a
 change to what subagents themselves can call.
 
 | Type | Tools | Model alias | Turns | Notes |
 |---|---|---|---|---|
-| `explore` | read only | `explorer` | 50 | own short prompt (`rawPrompt`: no project rules); no skills/todo; no `fork_context` |
-| `general` | current mode's | default (parent tier) | 25 | full prompt, project rules included |
+| `explore` | read only | `explorer` | inherited from the parent (100 by default; **was 50 on 2.2.3**) | own short prompt (`rawPrompt`: no project rules); no skills/todo; no `fork_context` |
+| `general` | current mode's | default (parent tier) | inherited from the parent (**was 25 on 2.2.3**) | full prompt, project rules included |
+| custom agent | its `groups` | its `modelTier` or parent | its own `maxTurns`, else the parent's | `.bob/agents/<name>.md` |
 
-Confirmed byte-identical on 2.2.0, field rename aside: the `explore` preset object is still `groups:["read"]`,
-`rawPrompt:true`, `maxTurns:50`, `denyTools:["update_todo_list","use_skill"]`, `allowForkContext:false`, and the
+**Changed on bob-code 2.3.0** (build `1.126.0+bob2.3.0.20261026121409`, bundle; anchors `maxTurns` and
+`SUBAGENT_FORBIDDEN_TOOLS` CHANGED): a spawned agent's turn limit is `agent.maxTurns ?? parent.getMaxTurns()`. The 25
+and the `explore` 50 below are therefore 2.2.3 facts; the built-in `explore` preset literal has lost its `maxTurns:50`
+(read directly) and the review agent keeps `maxTurns:30`. The parent's own limit is the one in force (the delta page
+states 100 by default). A custom agent that sets `maxTurns` in its frontmatter still gets that number.
+
+Confirmed byte-identical on 2.2.0, field rename aside (on 2.3.0 `maxTurns:50` is gone, see above): the `explore` preset object is still `groups:["read"]`,
+`rawPrompt:true`, `maxTurns:50` (2.2.0/2.2.3), `denyTools:["update_todo_list","use_skill"]`, `allowForkContext:false`, and the
 same system prompt (anchor `Explore codebase` SAME string), just `model:"explorer"` spelled `modelTier:"explorer"`.
 It is the **only** preset registered as an object literal (`{explore: <preset>}`) — there is no `general` preset
 object; `general` (or any other name that is not a registered preset or a custom agent) falls through to a
@@ -105,7 +173,8 @@ dynamic subagent built from the current mode's tools with the parent's model tie
 `resolvePreset`. Its 25-turn default was previously unlocated ("no `maxTurns:25` literal exists in either bundle")
 because it is not an object key — it is the nullish-coalescing fallback `setMaxTurns(preset?.maxTurns ?? 25)` at
 the subtask-creation call site, present verbatim (same `??25` fallback, same call shape, only the parameter name
-renamed) in **both** 2.1.0 and 2.2.0. This closes the "no literal source" gap left open after TASK-13.4.
+renamed) in **both** 2.1.0 and 2.2.0 (and 2.2.3). This closes the "no literal source" gap left open after TASK-13.4.
+On 2.3.0 that fallback is `this.parent.getMaxTurns()` (see above).
 
 Modes filter with `allowedSubagents`: Plan and Ask → `["explore"]`; Agent → all. Subagent budget = parent's
 remaining `maxCost`; its cost (not tokens) is added to the parent. Confirmed unchanged: anchor `allowedSubagents`
@@ -142,7 +211,7 @@ custom agents in a fresh task, not in the one you were already in.
 
 Confirmed unchanged: the tier list (`["fast","premium","ultra","explorer"]`), visible tiers
 (`["fast","premium","ultra"]`) and default (`"premium"`) are the same array/string literals on 2.2.0, and the
-production-mapping object above is byte-identical in both bundles (direct read; anchor `https://api.dev.bob.ibm.com`
+production-mapping object above is byte-identical in both bundles (and unchanged on 2.3.0, build `1.126.0+bob2.3.0.20261026121409`: read directly, `fast/premium/ultra` map to `premium-ide` in production, `explorer` to `explorer`) (direct read; anchor `https://api.dev.bob.ibm.com`
 SAME string). Two more, **internal**, non-user-selectable tiers exist in both builds: `security` (the command
 security check, see `skills/bob-security-model/reference/approvals.md`) and `background` (helper calls: message
 classification, code summaries) — confirmed by direct read, the two tier-id string literals sit next to the
@@ -151,8 +220,9 @@ tier-list array.
 - Picker shown only with >1 visible tier; `fast`/`ultra` hidden outside dev mode → no picker in production.
   A tier applies to the root task, locks after the first message, persists in `env._meta.modelTier`.
 - Subagents: `explore` → `explorer`, `general` → default (parent tier, confirmed above — no `modelTier` set means
-  the child inherits the parent's model resolver). Whether compaction still uses the task's model was not
-  re-checked on 2.2.0 and stays unverified.
+  the child inherits the parent's model resolver). Re-read on 2.3.0: `setModelResolver(parent.getModelResolver())`,
+  `modelTier && setModelTier(...)`. Whether compaction still uses the task's model was not
+  re-checked and stays unverified (2.2.0 label).
 - **Changed on bob-code 2.2.0**, build `1.126.0+bob2.2.0.20260924155054` (anchors `command-security-model`,
   `tool-model-routing` MISSING in 2.2.0; `featureFlagsSchema` MISSING is only the export name; direct read of the
   flags object — `getFlagValue` keys: 10 on 2.1.0, 8 on 2.2.0): `command-security-model` and `summary-model` are

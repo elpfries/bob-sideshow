@@ -5,11 +5,11 @@
 
 Read-only; standard library only. Folders and precedence reverse-engineered from bob-code 2.2.0,
 build 1.126.0+bob2.2.0.20260924155054 — docs/bob-2.1.0-to-2.2.0.md section 2 and the project_rules
-section of skills/bob-agent-rules/reference/injected-rules.md, both re-verified on that build.
-Re-verified on bob-code 2.2.3, build 1.126.0+bob2.2.3.20261014125159 (TASK-16.2): the installed
-extension.js is byte-identical to the 2.2.0 one on every anchor this script relies on, confirmed by
-bundle identity rather than re-reading the function (private/SOURCES.md "Verdicts 2.2.0 -> 2.2.1 ->
-2.2.3").
+section of skills/bob-agent-rules/reference/injected-rules.md. Re-verified on bob-code 2.2.3 (bundle
+identity) and on bob-code 2.3.0, build 1.126.0+bob2.3.0.20261026121409 (TASK-17.3, dist/extension.js):
+the rule loader (anchor "Rules: agents=") is IDENTICAL after neutralising identifiers, the preamble and
+the ignored names are the same strings, and the migration/skill roots are unchanged. docs/bob-2.2.3-to-2.3.0.md
+sections 2 and 4.
 
 Each rule root (workspace `.bob/` and global `~/.bob/`) also reads every directory (or symlink)
 under its sibling `plugins/` folder, sorted by name, for the same `rules-<mode>/` and `rules/`
@@ -17,11 +17,19 @@ subdirectories. Precedence is kind-first, root-second: `rules-<mode>` (base then
 alphabetically) outranks `rules` (base then plugins, alphabetically) outranks `AGENTS.md`, and the
 whole workspace side outranks the whole global side. See the "precedence" line this script prints.
 
-Trust: bob-code 2.2.0 takes `workspace.isTrusted` from the IDE at runtime and does not consult
-`trustedFolders.json` any more (that store existed on 2.1.0 but its lookup function was already
-dead code there). This script cannot read the IDE's runtime trust state offline, so it does not
-claim to know whether a folder is trusted; a leftover `trustedFolders.json` is shown only as
-historical 2.1.0 information, clearly labelled, never as the current trust status.
+MCP and mode files (bundle 2.3.0): the workspace reads `.bob/mcp.json` and `.bob/plugins/*/mcp.json`;
+the global side reads `~/.bob/settings/mcp.json` and, new in 2.3.0, `~/.bob/plugins/*/mcp.json`
+(2.2.3 read only the settings file). Custom modes: `custom_modes.yaml` and `plugins/*/custom_modes.yaml`
+in the workspace `.bob/`, `settings/custom_modes.yaml` and `plugins/*/custom_modes.yaml` globally.
+Only the file names are listed, never their contents (MCP files can hold secrets).
+
+Trust: in bob-code 2.2.3 and 2.3.0 the IDE passes the editor's `workspace.isTrusted` into the harness at
+runtime (the same code in both builds; `trustedFolders.json` is not consulted since 2.2.0). For an
+untrusted folder the rule loader returns no rules at all, and the harness also drops workspace modes,
+skills, agents and hooks and does not start MCP servers. Whether an untrusted folder also switches off
+auto-approval in the IDE is not established (docs/bob-2.2.3-to-2.3.0.md section 2). This script cannot
+read the IDE's runtime trust state offline, so it does not claim to know whether a folder is trusted; a
+leftover `trustedFolders.json` is shown only as historical 2.1.0 information, never as the current status.
 """
 import argparse
 import glob
@@ -59,7 +67,7 @@ def plugin_names(root):
 
 
 def rule_dirs(root):
-    """Rule directories under one root (.bob or ~/.bob), in bob-code 2.2.0 precedence order:
+    """Rule directories under one root (.bob or ~/.bob), in bob-code 2.2.0+ precedence order (unchanged on 2.3.0):
     base rules-<mode>/, then each plugin's rules-<mode>/ (alphabetical), then base rules/, then
     each plugin's rules/ (alphabetical)."""
     plugins = plugin_names(root)
@@ -93,8 +101,13 @@ def scope(label, root, base, ws=None):
         lines.append(f"AGENTS.md  {os.path.getsize(os.path.join(ws, 'AGENTS.md'))} B")
     lines += [f"{rel(p)}  {os.path.getsize(p)} B" for p in files_under(os.path.join(root, "agents"), 1)]
     lines += [rel(p) for p in files_under(os.path.join(root, "skills")) if p.endswith("SKILL.md")]
-    if os.path.isfile(os.path.join(root, "custom_modes.yaml")):
-        lines.append(rel(os.path.join(root, "custom_modes.yaml")))
+    mode_files = [os.path.join(root, "custom_modes.yaml") if ws else os.path.join(root, "settings", "custom_modes.yaml")]
+    mcp_files = [os.path.join(root, "mcp.json") if ws else os.path.join(root, "settings", "mcp.json")]
+    for name in plugin_names(root):
+        mode_files.append(os.path.join(root, "plugins", name, "custom_modes.yaml"))
+        mcp_files.append(os.path.join(root, "plugins", name, "mcp.json"))
+    lines += [rel(p) for p in mode_files if os.path.isfile(p)]
+    lines += [f"{rel(p)}  (MCP servers, contents not read)" for p in mcp_files if os.path.isfile(p)]
     settings = os.path.join(root, "settings.json") if ws else os.path.join(root, "settings", "settings.json")
     lines += [f"hook {h}" for h in hooks_in(settings)]
     print(f"{label:<11} {base}")
@@ -120,8 +133,9 @@ def main():
     except Exception:
         pass
     scope("global", os.path.join(HOME, ".bob"), HOME)
-    print("trust       bob-code 2.2.0 takes workspace.isTrusted from the IDE at runtime; this script "
-          "cannot read that state offline and does not know whether this folder is trusted.")
+    print("trust       bob-code 2.3.0 takes workspace.isTrusted from the IDE at runtime (same code as 2.2.3); an "
+          "untrusted folder gets no rules, workspace modes/skills/agents/hooks or MCP. This script cannot read "
+          "that state offline and does not know whether this folder is trusted.")
     legacy = os.path.join(HOME, ".bob", "trustedFolders.json")
     if os.path.isfile(legacy):
         try:
@@ -130,7 +144,7 @@ def main():
             status = folders.get(ws) or next((v for k, v in folders.items() if ws.startswith(k.rstrip("/") + "/")), None)
             if status is not None:
                 print(f"trust (2.1.0 leftover)  trustedFolders.json still lists this folder as {status!r}; "
-                      "bob-code 2.2.0 does not read this file, shown only as historical 2.1.0 info")
+                      "bob-code 2.2.0 and later do not read this file, shown only as historical 2.1.0 info")
         except Exception:
             pass
 

