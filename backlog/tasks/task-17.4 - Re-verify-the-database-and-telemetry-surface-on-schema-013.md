@@ -76,6 +76,8 @@ Assets : aucun asset produit ou modifié. Contrôles exécutés : py_compile de 
 Incidents : aucun incident de processus. Le défaut de lecture de bob_version.py (flags lus dans state.vscdb, sans les cinq nouveaux flags, au lieu de key_value_store.featureFlags.v1) est le défaut que le critère AC #2 demande de trouver et corriger ; il est traité dans la livraison, pas un contournement.
 Capitalisation : versé dans skills/bob-version/SKILL.md (source des flags, liste lue par le code, marques), skills/bob-telemetry/SKILL.md (migrations 012/013, rétention, forme de _meta.spend), docstrings des deux scripts, private/SOURCES.md (étapes 6-7 sur 2.3.0), et notes de TASK-17.5 (étiquettes, VERIFIED_SCHEMA). Délibérément laissé : taux Bobcoins/M et classes (2.1.0), coût racine avec sous-agents (2.2.3), forme de commandUse sur commandes signalées, contenu des lignes editorSession (non déterminable).
 Vérificateur indépendant : sans objet (Incidents = aucun).
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py, mesuré depuis la session d'orchestration après le commit) : 46 appels API, ≈ 2,11 USD ≈ 1,88 EUR équivalent API (taux BCE du 2026-11-02 : 1 USD = 0,8916 EUR ; tarifs de liste, pas une facture). Fenêtre 69550cd → 568c724, 5 min, temps effectif ≈ 5 min, aucune pause (cohérent avec les 4,7 min de l'outil Agent, 47 appels d'outils). Orchestration sur Opus 5.5, sous-agent sur Sonnet. Contrôles refaits depuis la session principale : py_compile OK ; bob_version.py lit les flags depuis bob.db et affiche les nouveaux flags avec la marque pushed, not read by 2.3.0 ; bob_telemetry.py summary affiche la ligne history window.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
