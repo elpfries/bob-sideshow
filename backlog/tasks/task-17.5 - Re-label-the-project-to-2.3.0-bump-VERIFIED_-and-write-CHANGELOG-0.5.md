@@ -4,7 +4,7 @@ title: 'Re-label the project to 2.3.0, bump VERIFIED_* and write CHANGELOG 0.5'
 status: To Do
 assignee: []
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:23'
+updated_date: '2026-11-02 23:35'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -42,4 +42,11 @@ Kept with an earlier label or undetermined, with reason: (a) approval dialog and
 Corrected a pre-existing error: the PreToolUse hook runs first (before the security check and the approval flow), also on 2.2.3; approvals.md used to say after the security check. Worth a look in bob-override-rules (TASK-17.3) and in the command-guard.mjs header if either repeats the old order (I found no other occurrence of the sentence in skills/ docs/ README.md).
 Out of scope, noticed: docs/codex-vs-bob.md line 75 says a Codex flag is Bob's yolo; a reader could take it for an IBM Bob IDE setting (the IDE has none).
 approval_check.py gained --workspace and an approximated ignored-path write gate; if you change the CHANGELOG or README wording about the script, say approximation.
+
+PASSATION DE TASK-17.4 (2026-11-03, build 1.126.0+bob2.3.0.20261026121409) pour TASK-17.5 :
+- VERIFIED_SCHEMA à poser : 013_workspace_editor_sessions (migrations 001..013).
+- Étiquetées 2.3.0 : forme de _meta.spend ({cost, contextTokens}), migrations 012/013 (triggers, aucune table), rétention récursive (cleanupOldTasks, deleteTaskTrees, tasks.retentionDays 30, seuil <= 0 désactive), jeu de flags lu par le code (getFlagValue : 8 clés ; lectures directes : web-search-path, feedback-model, feedback-verification-enabled, bob-plugin-service-url), cinq nouveaux flags, cache des flags = key_value_store featureFlags.v1 (bob_version.py le lit d'abord, state.vscdb en repli), 12 sections et 9 blocs du prompt de la tâche 6cc0a0b9.
+- Laissées antérieures (non revérifiables sur 2.3.0) : taux Bobcoins/M et classes standard/economy (2.1.0) ; coût d'une racine incluant ses sous-agents (2.2.3, aucun sous-agent dans la base) ; forme de toolUsage.commandUse (vue seulement sur 2 commandes simples non signalées).
+- Indéterminé : contenu d'une ligne editorSession:<project_id> (aucun écrivain dans le bundle, aucune ligne dans la base).
+- Les scripts bob-telemetry et bob-version avertissent encore verified on 2.2.3 ; _bobcheck.py non touché (hachage unique).
 <!-- SECTION:NOTES:END -->

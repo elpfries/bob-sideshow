@@ -6,7 +6,14 @@
 
 Read-only; Python 3.8+, standard library only. Verified on the bob-code 2.2.3 schema
 (011_key_value_store); re-verified 2026-09-28 on live bob-code 2.2.0 traffic, and again 2026-10-19 on
-live bob-code 2.2.3 traffic (task 9ad66ac1, TASK-16.2) — same schema, same call shape.
+live bob-code 2.2.3 traffic (task 9ad66ac1, TASK-16.2) — same schema, same call shape. Re-run 2026-11-03 on
+bob-code 2.3.0 (build 1.126.0+bob2.3.0.20261026121409, schema 013_workspace_editor_sessions, task 6cc0a0b9,
+TASK-17.4): no parsing change needed, every view runs.
+
+The database never holds the full history: at startup Bob deletes root tasks whose updated_at is older than
+the setting tasks.retentionDays (default 30 days) unless pinned; on 2.3.0 their whole sub-task trees go with
+them (WITH RECURSIVE). So the oldest rows are at best ~30 days old; to keep more, raise the setting or pin
+the task. `summary` prints the oldest task's creation date to make that window visible.
 
 On calls made by bob-code 2.2.0 (checked on live 2.2.0 traffic, 2026-09-28) and bob-code 2.2.3 (checked
 on live 2.2.3 traffic, 2026-10-19), messages.data._meta.spend carries only {cost, contextTokens} —
@@ -183,13 +190,15 @@ def cmd_summary(tasks, msgs, attrib, a):
     out = {"db": a.db, "latest": ts(max([t["updated_at"] for t in tasks.values()] or [0])), "rootTasks": len(roots),
            "subagentTasks": len(tasks) - len(roots), "llmCalls": len(calls), "tokensIn": sum(c["input"] for c in known_calls),
            "tokensOut": sum(c["output"] for c in known_calls), "callsWithoutTokens": len(calls) - len(known_calls),
-           "bobcoins": root_cost, "bobcoinsPerCall": call_cost, "byClass": rows}
+           "bobcoins": root_cost, "bobcoinsPerCall": call_cost, "byClass": rows,
+           "oldestTaskCreated": ts(min([t["created_at"] for t in tasks.values() if t["created_at"]] or [0]))}
     if a.json:
         print(json.dumps(out, indent=2, ensure_ascii=False))
         return
     print(f"{a.db} · latest {out['latest']} · {len(roots)} root tasks, {out['subagentTasks']} subagents · "
           f"{len(calls)} LLM calls · {out['tokensIn']:,} tokens in / {out['tokensOut']:,} out"
           + (f" ({out['callsWithoutTokens']} calls without token counts, excluded)" if out["callsWithoutTokens"] else ""))
+    print(f"history window: oldest task created {out['oldestTaskCreated']} (Bob purges tasks idle longer than tasks.retentionDays, default 30)")
     print(f"Bobcoins {root_cost:.4f}" + ("" if abs(root_cost - call_cost) < 1e-6 else f"  (per-call sum {call_cost:.4f})"))
     table([{"class": r["class"], "who": r["who"], "calls": r["calls"],
             "in": f"{r['input']:,}" if r["tokensKnown"] else "n/a", "out": f"{r['output']:,}" if r["tokensKnown"] else "n/a",

@@ -1,10 +1,11 @@
 ---
 id: TASK-17.4
 title: Re-verify the database and telemetry surface on schema 013
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@claude'
 created_date: '2026-11-02 22:51'
-updated_date: '2026-11-02 23:11'
+updated_date: '2026-11-02 23:36'
 labels:
   - 'model:secondaire'
 milestone: m-2
@@ -24,11 +25,17 @@ Shared facts (session of 2026-11-02): Bob installed = 2.3.0, build 1.126.0+bob2.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 What migrations 012 and 013 change is stated from the bundle and checked in the real database (read-only)
-- [ ] #2 bob_telemetry.py summary, calls and security, and bob_version.py, run on the real 2.3.0 database and on the 2.3.0 task without error; the shape of _meta.spend and the flag set on 2.3.0 are recorded and any parsing gap is fixed minimally
-- [ ] #3 The task retention purge (tasks.retentionDays, default value, when it runs) is re-checked on 2.3.0 and documented in bob-telemetry with build and source
-- [ ] #4 Steps 6 and 7 of private/SOURCES.md are recorded for 2.3.0 with the task id and outputs
+- [x] #1 What migrations 012 and 013 change is stated from the bundle and checked in the real database (read-only)
+- [x] #2 bob_telemetry.py summary, calls and security, and bob_version.py, run on the real 2.3.0 database and on the 2.3.0 task without error; the shape of _meta.spend and the flag set on 2.3.0 are recorded and any parsing gap is fixed minimally
+- [x] #3 The task retention purge (tasks.retentionDays, default value, when it runs) is re-checked on 2.3.0 and documented in bob-telemetry with build and source
+- [x] #4 Steps 6 and 7 of private/SOURCES.md are recorded for 2.3.0 with the task id and outputs
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Re-derive flag read set from 2.3.0 bundle; fix bob_version.py (flags from featureFlags.v1, new keys, marks). 2. bob_telemetry.py: oldest-task line, retention docstring. 3. Document 012/013 and retention in the two SKILL.md. 4. Record steps 6-7 in private/SOURCES.md. 5. Run scripts, notes, commit.
+<!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 
@@ -48,4 +55,31 @@ MESSAGES AND SPEND
 8. The Tool Call Decision telemetry event now also fires for the four always-approved tools (action auto_approved, the same action as every other auto-approved call); no database effect.
 
 SCRIPTS TO RUN COLD AFTER install.sh (parent TASK-17 AC 2): dump_system_prompt.py --task 6cc0a0b9 --list works on 2.3.0 (warns: verified on 2.2.3, schema 011). Task 6cc0a0b9 is the only 2.3.0 task at the time of writing; do not delete it.
+
+Vérification de livraison (2026-11-03, build 1.126.0+bob2.3.0.20261026121409, schéma 013_workspace_editor_sessions)
+
+AC #1 : migrations 012/013 lues dans le bundle (constantes D0i et M0i, liste j0i) et vérifiées en lecture seule : sqlite_master contient exactement les triggers delete_workspace_editor_session et ignore_orphan_editor_session_insert, key_value_store ne contient que featureFlags.v1 (0 ligne editorSession:), aucune table ajoutée. Écrit dans skills/bob-telemetry/SKILL.md. Indéterminé : ce que stocke une editorSession (rien dans le bundle ne l'écrit).
+AC #2 : bob_telemetry.py summary, calls, security (et --task 6cc0a0b9), tasks, tools, changes, context, et bob_version.py exécutés sur la base et l'installation réelles sans erreur ; _meta.spend = {cost, contextTokens} inchangé (3 appels, ex. cost 0.036608 contextTokens 18304). Défaut de lecture corrigé : bob_version.py lisait seulement state.vscdb (59 clés, sans les nouveaux flags) alors que le code lit key_value_store.featureFlags.v1 (64 clés) ; il lit maintenant la base d'abord. Sorties brutes dans private/SOURCES.md.
+AC #3 : rétention revérifiée sur 2.3.0 : ancres cleanupOldTasks, "Cleaned up ${a} tasks older than ${n} days", tasks?.retentionDays??30, WITH RECURSIVE tree(id) (deleteTaskTrees) ; purge au démarrage (initConfigs), racines non épinglées dont updated_at dépasse le seuil, seuil <= 0 désactive. Documenté dans skills/bob-telemetry/SKILL.md et la docstring de bob_telemetry.py ; summary affiche la date de la plus ancienne tâche.
+AC #4 : étapes 6 et 7 consignées dans private/SOURCES.md sous Steps 6-7 on 2.3.0 (TASK-17.4), tâche 6cc0a0b9, sorties brutes.
+
+Contrôles : py_compile des scripts OK ; un seul hachage pour _bobcheck.py.
+
+Passation à TASK-17.5 :
+- Étiquettes posées à 2.3.0 : forme de _meta.spend, rétention récursive, migrations 012/013, flags (lecture par le code, 5 nouveaux flags, cache featureFlags.v1), 12 sections/9 blocs du prompt de la tâche 6cc0a0b9.
+- Laissées antérieures : taux Bobcoins/M (2.1.0), classes standard/economy (2.1.0), « le coût d'une racine inclut ses sous-agents » (2.2.3, pas de sous-agent dans la base 2.3.0), structure toolUsage.commandUse (vue en 2.3.0 sur commandes simples seulement, 0 signalée).
+- VERIFIED_SCHEMA à poser : 013_workspace_editor_sessions.
+- Les scripts avertissent encore verified on 2.2.3 jusqu'à 17.5.
+
+## Vérification de livraison
+Assets : aucun asset produit ou modifié. Contrôles exécutés : py_compile de tous les scripts OK, un seul hachage pour les cinq _bobcheck.py, sept vues de bob_telemetry.py et bob_version.py (texte et --json) exécutés sur la base réelle sans erreur, flags cités confrontés au bundle par regex.
+Incidents : aucun incident de processus. Le défaut de lecture de bob_version.py (flags lus dans state.vscdb, sans les cinq nouveaux flags, au lieu de key_value_store.featureFlags.v1) est le défaut que le critère AC #2 demande de trouver et corriger ; il est traité dans la livraison, pas un contournement.
+Capitalisation : versé dans skills/bob-version/SKILL.md (source des flags, liste lue par le code, marques), skills/bob-telemetry/SKILL.md (migrations 012/013, rétention, forme de _meta.spend), docstrings des deux scripts, private/SOURCES.md (étapes 6-7 sur 2.3.0), et notes de TASK-17.5 (étiquettes, VERIFIED_SCHEMA). Délibérément laissé : taux Bobcoins/M et classes (2.1.0), coût racine avec sous-agents (2.2.3), forme de commandUse sur commandes signalées, contenu des lignes editorSession (non déterminable).
+Vérificateur indépendant : sans objet (Incidents = aucun).
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+bob_version.py lit désormais les flags dans key_value_store.featureFlags.v1 (cache réel du code, 64 clés) avec repli sur state.vscdb, affiche les cinq nouveaux flags et marque pushed, not read by 2.3.0 selon une liste re-dérivée du bundle. bob_telemetry.py affiche la date de la plus ancienne tâche ; bob-telemetry documente migrations 012/013, _meta.spend inchangé et la rétention tasks.retentionDays (purge au démarrage, récursive sur 2.3.0). Vérifié par l'exécution des sept vues et de bob_version.py sur la base et la tâche 6cc0a0b9 réelles, py_compile et hachage unique de _bobcheck.py. Étapes 6-7 consignées dans private/SOURCES.md.
+<!-- SECTION:FINAL_SUMMARY:END -->

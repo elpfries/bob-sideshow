@@ -5,13 +5,10 @@
 
 Read-only; Python 3.8+, standard library only.
 
-Server-flag list re-checked on live bob-code 2.2.0 traffic (build 1.126.0+bob2.2.0.20260924155054,
-2026-09-28), and again on live bob-code 2.2.3 traffic (build 1.126.0+bob2.2.3.20261014125159,
-2026-10-19, TASK-16.2): command-security-model and summary-model are still pushed (state.vscdb,
-key_value_store.featureFlags.v1) but no longer read by bob-code 2.2.3 for their original purpose;
-kept in the printed list, marked "[pushed, not read by 2.2.3]" rather than removed. The keys
-2.2.0's getFlagValue actually reads were added to the printed set, and the same set was seen
-unchanged on the 2.2.3 install.
+Server-flag list re-derived from the bob-code 2.3.0 code (build 1.126.0+bob2.3.0.20261026121409,
+2026-11-03, TASK-17.4; see the comment above PUSHED_NOT_READ_2_3_0). Flags are read from bob.db
+key_value_store.featureFlags.v1 (state.vscdb is the stale fallback). The last applied migration is printed;
+2.3.0 ships migrations 001..013 (schema 013_workspace_editor_sessions).
 """
 import argparse
 import datetime as dt
@@ -29,20 +26,30 @@ import _bobcheck  # noqa: E402
 
 HOME = os.path.expanduser("~")
 SYSTEM = platform.system()
-# command-security-model and summary-model are still pushed by the server (seen in state.vscdb and in
-# key_value_store.featureFlags.v1) but bob-code 2.2.0's getFlagValue no longer reads them for their
-# original purpose (docs/bob-2.1.0-to-2.2.0.md section 6: the security check now asks a server router
-# for tier "security" instead). Kept here, marked, rather than dropped, so a re-appearance is visible.
-# Confirmed unchanged on the live bob-code 2.2.3 install (2026-10-19, TASK-16.2): same two flags still
-# pushed, still unread.
-PUSHED_NOT_READ_2_2_0 = frozenset({"command-security-model", "summary-model"})
+# Printed flags that bob-code 2.3.0 never reads. Re-derived on build 1.126.0+bob2.3.0.20261026121409
+# (TASK-17.4, 2026-11-03) from dist/extension.js and dist/web/assets, not copied from the 2.2.3 list:
+#   read through getFlagValue("..."): bob-findings-enabled, context-focus-query-enabled, dynamic-context-enabled,
+#     ibm-support-url, issue-repo-url, max-monthly-budget-allowance, observation-masking-enabled, review-flow-enabled;
+#   read directly (flags["..."], flags?.["..."]): web-search-path, feedback-model, feedback-verification-enabled,
+#     bob-marketplace-url, bob-plugin-service-url, marketplace-enabled, agentops-telemetry-enabled;
+#   read by the webview (featureFlags.<key> conditions): command-security-enabled, plugins-ui-enabled,
+#     max-monthly-budget-allowance, next-edit-suggestions-enabled, secrets-scan-enabled, semgrep-scan-enabled.
+# 2.3.0 no longer calls getFlagValue for feedback-model / feedback-verification-enabled but still reads both directly.
+# command-security-model and summary-model are still pushed (bob.db key_value_store.featureFlags.v1) yet their
+# names no longer occur anywhere in the 2.3.0 bundle; completion-model and next-edit-model occur only in the schema
+# and the defaults object. Kept in the printed list, marked, rather than dropped, so a re-appearance is visible.
+PUSHED_NOT_READ_2_3_0 = frozenset({"command-security-model", "summary-model", "completion-model", "next-edit-model"})
 FLAG_KEYS = ("command-security-model", "summary-model", "completion-model", "next-edit-model", "feedback-model",
              "command-security-enabled",
-             # keys bob-code 2.2.0's getFlagValue reads (verified 2026-09-28 on build
-             # 1.126.0+bob2.2.0.20260924155054, TASK-13.4/TASK-13.2): none of these were in the 2.1.0 list above
-             # except feedback-model.
+             # keys bob-code's getFlagValue reads (verified 2.2.0, re-derived 2.3.0)
              "bob-findings-enabled", "dynamic-context-enabled", "feedback-verification-enabled", "ibm-support-url",
-             "issue-repo-url", "max-monthly-budget-allowance", "review-flow-enabled")
+             "issue-repo-url", "max-monthly-budget-allowance", "review-flow-enabled",
+             # new in 2.3.0 (TASK-17.4): schema keys with defaults web-search-path "/search/tbob",
+             # bob-plugin-service-url "", plugins-ui-enabled false, observation-masking-enabled false,
+             # context-focus-query-enabled false
+             "web-search-path", "bob-plugin-service-url", "plugins-ui-enabled", "observation-masking-enabled",
+             "context-focus-query-enabled")
+FLAG_CACHE_KEY = "featureFlags.v1"  # bob.db key_value_store, the cache bob-code 2.2.3 and 2.3.0 load and save
 
 
 def read_json(path):
@@ -127,20 +134,37 @@ def db_info(path):
     return r
 
 
-def flags_info(ide_folder):
+def flags_info(ide_folder, db_path=None):
+    """Server-pushed flags. Source of truth is bob.db key_value_store.featureFlags.v1 (what bob-code 2.2.3/2.3.0
+    loads); state.vscdb (IBM.bob-code / bob.featureFlags.cache) is an older mirror that 2.3.0 no longer references
+    and that lacks the flags added in 2.3.0, so it is only the fallback."""
+    cache, src = None, None
+    if db_path:
+        try:
+            con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+            row = con.execute("select value_json from key_value_store where key=?", (FLAG_CACHE_KEY,)).fetchone()
+            con.close()
+            if row:
+                cache, src = json.loads(row[0]), "bob.db key_value_store." + FLAG_CACHE_KEY
+        except Exception:
+            cache = None
     p = os.path.join(ide_folder, "User", "globalStorage", "state.vscdb")
-    if not os.path.isfile(p):
-        return {"path": p}
-    try:
-        con = sqlite3.connect(f"file:{p}?mode=ro", uri=True)
-        row = con.execute("select value from ItemTable where key='IBM.bob-code'").fetchone()
-        con.close()
-        cache = json.loads(row[0]).get("bob.featureFlags.cache", {}) if row else {}
-    except Exception:
-        return {"path": p}
-    return {"path": p, "count": len(cache),
+    if cache is None:
+        if not os.path.isfile(p):
+            return {"path": p}
+        try:
+            con = sqlite3.connect(f"file:{p}?mode=ro", uri=True)
+            row = con.execute("select value from ItemTable where key='IBM.bob-code'").fetchone()
+            con.close()
+            cache = json.loads(row[0]).get("bob.featureFlags.cache", {}) if row else {}
+            src = p
+        except Exception:
+            return {"path": p}
+    if not isinstance(cache, dict):
+        return {"path": src or p}
+    return {"path": src, "count": len(cache),
             "flags": {k: v for k, v in cache.items() if k in FLAG_KEYS or k.startswith("experiment-")},
-            "pushedNotReadBy2_2_0": sorted(k for k in cache if k in PUSHED_NOT_READ_2_2_0)}
+            "pushedNotReadBy2_3_0": sorted(k for k in cache if k in PUSHED_NOT_READ_2_3_0)}
 
 
 def main():
@@ -154,7 +178,7 @@ def main():
     apps = [app_info(x) for x in _bobcheck.app_candidates()]
     data = data_info()
     report = {"system": f"{SYSTEM} {platform.release()} {platform.machine()}", "apps": apps, "shell": shell_info(),
-              "data": data, "database": db_info(data["database"]), "serverFlags": flags_info(data["ideDataFolder"]),
+              "data": data, "database": db_info(data["database"]), "serverFlags": flags_info(data["ideDataFolder"], data["database"]),
               "reference": _bobcheck.check("bob_version", db_path=data["database"], quiet=True)}
     if a.json:
         print(json.dumps(report, indent=2, ensure_ascii=False))
@@ -179,7 +203,7 @@ def main():
         print(f"bob.db       {db.get('error') or 'absent'}")
     fl = report["serverFlags"].get("flags") or {}
     if fl:
-        print("server flags " + "  ".join(f"{k}={json.dumps(v)}" + (" [pushed, not read by 2.2.3]" if k in PUSHED_NOT_READ_2_2_0 else "")
+        print("server flags " + "  ".join(f"{k}={json.dumps(v)}" + (" [pushed, not read by 2.3.0]" if k in PUSHED_NOT_READ_2_3_0 else "")
                                            for k, v in sorted(fl.items())))
     ref = report["reference"]
     print("reference    " + ("MATCH — verified on bob-code " + ref["verifiedExtension"] + " / " + ref["verifiedSchema"]
