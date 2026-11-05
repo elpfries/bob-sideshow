@@ -1,6 +1,6 @@
 # Kimi Code vs Bob: the same five questions
 
-Last of the series after [cursor-vs-bob.md](cursor-vs-bob.md), [claude-code-vs-bob.md](claude-code-vs-bob.md),
+Fifth of the series after [cursor-vs-bob.md](cursor-vs-bob.md), [claude-code-vs-bob.md](claude-code-vs-bob.md),
 [opencode-vs-bob.md](opencode-vs-bob.md) and [codex-vs-bob.md](codex-vs-bob.md). bob-sideshow
 answers five questions about IBM Bob: which version am I running, what did it cost, why does it
 ask for approval, which rules does it follow, and how do I make it follow mine. This note asks
