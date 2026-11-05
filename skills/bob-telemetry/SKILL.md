@@ -25,9 +25,10 @@ When explaining (build 2.2.3 unless a bullet says 2.3.0; 2.3.0 = `1.126.0+bob2.3
   subagents). Any other rate means billing changed: report it.
 - On bob-code 2.2.0 (checked 2026-09-28 on live traffic) and bob-code 2.2.3 (checked 2026-10-19 on
   live traffic, task 9ad66ac1), calls no longer carry token counts at all (`_meta.spend` is
-  `{cost, contextTokens}` only), so the class is always `n/a` and the unit price cannot be measured;
-  token columns show `n/a` rather than 0, and the `ctx` column (context tokens for that call) is
-  still available. Bobcoins totals are unaffected.
+  `{cost, contextTokens}` only), so the class is always `n/a` here; token columns show `n/a` rather
+  than 0, and the `ctx` column (context tokens for that call) is still available. Bobcoins totals are
+  unaffected. The unit price can still be measured on `contextTokens`: that is what `bob-pricing`
+  does (2.0 Bobcoins per million context tokens on 2.3.0, cached tokens billed at the full rate).
 - 2.3.0 (checked 2026-11-03 on live traffic, task 6cc0a0b9: three priced calls, `_meta.spend` =
   `{cost, contextTokens}`, e.g. `{"cost":0.036608,"contextTokens":18304}`; `summary`, `tasks`, `calls`,
   `tools`, `security`, `changes`, `context` all run unchanged): same shape, class still `n/a`. The Bobcoins

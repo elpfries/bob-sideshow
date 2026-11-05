@@ -35,6 +35,7 @@ versions. The version guard tells you when you are off the verified build.
 
 - `bob-version` — which Bob am I running?
 - `bob-telemetry` — what did Bob spend, on which model, in which task?
+- `bob-pricing` — what is a Bobcoin worth in tokens? are cached tokens billed at the full rate?
 - `bob-security-model` — why does Bob ask me to approve this? would it auto-approve that?
 - `bob-agent-rules` — which rules does Bob follow about subagents, models, inline answers?
 - `bob-override-rules` — make Bob follow my rules instead

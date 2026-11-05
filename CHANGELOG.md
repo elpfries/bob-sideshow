@@ -25,6 +25,11 @@ Verified on IBM Bob 2.3.0, a real update this time: `bob-code` changed, and so d
     `{cost, contextTokens}`; five new server flags; old tasks are purged recursively, whole sub-task
     trees at once, after `tasks.retentionDays` (30 by default).
 - **What changed in bob-sideshow:**
+  - **New skill `bob-pricing`.** Measures Bobcoins per million context tokens on every priced call
+    (2.0 on 2.3.0, exact on 12/12 calls), states whether cached tokens are billed at the full rate
+    (they are: follow-up turns seconds apart cost `contextTokens × 2e-6`, and `cost` is the server's
+    `credits` field, `contextTokens = input + output` cached tokens included), and prices the same
+    tokens on providers that discount cached input (`compare`, with the loss due to the policy alone).
   - `bob-security-model` rewritten on 2.3.0, with a section "There is no yolo mode" and two corrections
     (the `browser` group was missing; `PreToolUse` runs before the security check).
   - `approval_check.py` approximates the ignored-path write gate (option `--workspace`); it is an
