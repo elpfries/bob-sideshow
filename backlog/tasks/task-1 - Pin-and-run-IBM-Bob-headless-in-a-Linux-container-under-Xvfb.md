@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@bob'
 created_date: '2026-09-19 20:14'
-updated_date: '2026-11-05 20:59'
+updated_date: '2026-11-05 21:02'
 labels:
   - 'model:secondaire'
 milestone: m-0
@@ -62,6 +62,8 @@ Décision NON prise : quelle version épingler dans le conteneur. Elle revient �
 Arbitrage version (2026-11-05, session d'orchestration m-0) : Bob 2.3.0 choisi pour le conteneur. Vérifier que private/baseline-2.3.0/ existe avant de démarrer ; si seul 2.2.3 est disponible, signaler à l'utilisateur. Cette note PRIME sur toute mention d'une version antérieure dans la description.
 
 Implémentation (2026-11-05) : harness/container/ créé avec Dockerfile, entrypoint.sh et assert-pins.sh. Bob 2.3.0 Linux deb téléchargé via le endpoint public «https://bob.ibm.com/api/download/bobide» (POST, platform=linux, version=1.126.0+bob2.3.0, architecture=amd64). Chemin d'installation Linux : /usr/share/bobide/resources/app/. SHA-1 du build Linux établi par dpkg-x dans un conteneur probe : 0b8ef4c68a3f0acd71f1f69e0d7e01070fa9c343 (bob-code 2.3.0 Linux, différent du SHA-1 macOS 57b8ecdb... de baseline-2.3.0/ — les deux sont bob-code 2.3.0 compilés pour leur plate-forme). Auto-update désactivé en éditant updateUrl dans product.json (Python one-liner dans le Dockerfile). Critères 3 et 4 prouvés par exécution réelle. Critères 1 et 2 non prouvés sur macOS arm64 (QEMU) : bobide sort immédiatement (code 0, pas de sortie) — cause connue, pas un défaut du harness.
+
+Télémétrie (relevé reconstruit depuis les commits, script backfill.py) : 116 appels API (opus-5-5 : 95 + fable-5-1 : 21), 129 116 tokens de sortie, 37 212 876 cache read, 1 188 255 cache write, ≈43,65 USD ≈38,89 EUR équivalent API (taux BCE du 2026-11-05 : 1 USD = 0,8910 EUR ; tarifs de liste, pas une facture). Méthode : fenêtre (commit 8b041f8 exclu) → commit a3d53b6 inclus, fenêtre 1 159 min, temps effectif ≈43 min (11 pauses > 120 s). Critères 1 et 2 non prouvés sur macOS arm64 (bobide x86_64 sort silencieusement sous QEMU) ; preuve attendue sur hôte linux/amd64 natif.
 <!-- SECTION:NOTES:END -->
 
 ## Final Summary
