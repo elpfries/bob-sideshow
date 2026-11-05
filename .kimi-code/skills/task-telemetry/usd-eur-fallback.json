@@ -1,6 +1,6 @@
 {
-  "usd_eur": 0.89158,
-  "date": "2026-11-02",
+  "usd_eur": 0.89095,
+  "date": "2026-11-05",
   "source": "ECB daily reference rate via frankfurter.dev",
   "note": "Fallback used by measure.py and backfill.py when the ECB cannot be reached. Rewritten automatically by any run that does reach it \u2014 commit the change so the next offline run uses a fresh rate."
 }
