@@ -172,11 +172,17 @@ def main() -> int:
             totals[record["model"]][k] += record["usage"].get(k) or 0
 
     stamps.sort()
-    window_s = (stamps[-1] - stamps[0]).total_seconds()
-    pauses = [(a, b, (b - a).total_seconds()) for a, b in zip(stamps, stamps[1:])
-              if (b - a).total_seconds() > args.gap_threshold]
-    pause_s = sum(g for _, _, g in pauses)
-    active_s = window_s - pause_s
+    if len(stamps) < 2:
+        window_s = 0.0
+        pauses = []
+        pause_s = 0.0
+        active_s = 0.0
+    else:
+        window_s = (stamps[-1] - stamps[0]).total_seconds()
+        pauses = [(a, b, (b - a).total_seconds()) for a, b in zip(stamps, stamps[1:])
+                  if (b - a).total_seconds() > args.gap_threshold]
+        pause_s = sum(g for _, _, g in pauses)
+        active_s = window_s - pause_s
 
     rate, rate_fr, rate_en = measure.resolve_usd_eur(args.usd_eur)
     cost_usd = 0.0
